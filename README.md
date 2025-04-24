@@ -55,19 +55,5 @@ A Next.js + React application for managing students, instructors, courses and cl
 - **Backend:** Node.js, Next.js Server Actions  
 - **ORM:** Prisma  
 - **Database:** PostgreSQL (or SQLite / Oracle / …)  
-- **Language:** TypeScript / JavaScript  
+- **Language:** JavaScript  
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js ≥ 16  
-- npm or yarn  
-- A running PostgreSQL (or your choice) instance  
-
-### Installation
-
-```bash
-git clone https://github.com/your-org/student-course-app.git
-cd student-course-app
-npm install

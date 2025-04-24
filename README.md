@@ -7,8 +7,6 @@ A Next.js + React application for managing students, instructors, courses and cl
 ---
 
 ## Features
-
-- Full CRUD for Students, Courses, Instructors, Classes  
 - Efficient filtering, sorting & aggregation at the database level  
 - Next.js Server Actions & REST APIs  
 - React-based stats dashboard  

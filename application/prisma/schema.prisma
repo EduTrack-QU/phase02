@@ -63,6 +63,7 @@ model Student {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  gpa      Float
 
   courses Course[]
   classes Class[]

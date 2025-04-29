@@ -16,7 +16,7 @@ A Next.js + React application for managing students, instructors, courses and cl
 - **Frontend:** Next.js, React  
 - **Backend:** Node.js, Next.js Server Actions  
 - **ORM:** Prisma  
-- **Database:** PostgreSQL (or SQLite / Oracle / …)  
+- **Database:** SQLite
 - **Language:** JavaScript  
 
 ## Stats we are tracking

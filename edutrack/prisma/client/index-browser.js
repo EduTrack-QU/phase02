@@ -119,7 +119,6 @@ exports.Prisma.CourseScalarFieldEnum = {
   name: 'name',
   description: 'description',
   grade: 'grade',
-  instructorId: 'instructorId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -127,14 +126,14 @@ exports.Prisma.CourseScalarFieldEnum = {
 exports.Prisma.ClassScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  courseId: 'courseId',
-  instructorId: 'instructorId',
   startTime: 'startTime',
   endTime: 'endTime',
   location: 'location',
   status: 'status',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  courseId: 'courseId',
+  instructorId: 'instructorId'
 };
 
 exports.Prisma.AdminScalarFieldEnum = {

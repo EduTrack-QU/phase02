@@ -12,36 +12,32 @@ datasource db {
 }
 
 model Course {
-  id           Int      @id @default(autoincrement())
-  name         String
-  description  String
-  grade        String
-  instructorId Int
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  grade       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  students   Student[]
-  classes    Class[]
-  instructor Instructor @relation(fields: [instructorId], references: [id])
-
-  @@index([instructorId])
+  students Student[]
+  classes  Class[]
 }
 
 model Class {
-  id           Int      @id @default(autoincrement())
-  name         String
+  id        Int      @id @default(autoincrement())
+  name      String
+  startTime DateTime
+  endTime   DateTime
+  location  String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   courseId     Int
   instructorId Int
-  startTime    DateTime
-  endTime      DateTime
-  location     String
-  status       String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  course     Course     @relation(fields: [courseId], references: [id])
-  instructor Instructor @relation(fields: [instructorId], references: [id])
-  students   Student[]
+  course       Course     @relation(fields: [courseId], references: [id])
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  students     Student[]
 
   @@index([courseId])
   @@index([instructorId])
@@ -77,6 +73,5 @@ model Instructor {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  courses Course[]
   classes Class[]
 }

@@ -37,3 +37,28 @@ export async function getTopThreeCourses() {
       studentCount: course._count.students,
     }));
   }
+
+  export async function getCoursesWithMostAndLeastStudents() {
+    const courses = await prisma.course.findMany({
+      include: {
+        _count: {
+          select: { students: true },
+        },
+      },
+      orderBy: {
+        students: { _count: 'desc' },
+      }
+    });
+  
+    const formatCourse = (course) => course ? ({
+      id: course.id,
+      name: course.name,
+      studentCount: course._count.students
+    }) : null;
+  
+    return {
+      mostStudents: formatCourse(courses[0]),
+      leastStudents: formatCourse(courses[courses.length - 1]),
+    };
+  }
+  

@@ -24,7 +24,7 @@ A Next.js + React application for managing students, instructors, courses and cl
 2. The top 3 courses taken by the students [x]
 3. The failure rate per course
 4. Instructor with the most courses taught
-5. Course with most/least students
+5. Course with most/least students [x]
 6. Class with highest/lowest attendance
 7. Peak hours for classes
 8. Course distribution by grade

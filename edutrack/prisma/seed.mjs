@@ -1,6 +1,6 @@
 import { PrismaClient } from '../prisma/client/index.js';
 import { faker } from '@faker-js/faker';
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -12,10 +12,10 @@ const CLASS_COUNT = 150;
 const ADMIN_COUNT = 5;
 
 // Helper functions
-const hashPassword = async (password) => {
-  const saltRounds = 10;
-  return await bcrypt.hash(password, saltRounds);
-};
+// const hashPassword = async (password) => {
+//   const saltRounds = 10;
+//   return await bcrypt.hash(password, saltRounds);
+// };
 
 async function main() {
   console.log('Starting seeding...');
@@ -29,7 +29,8 @@ async function main() {
         data: {
           name: faker.person.fullName(),
           email: faker.internet.email().toLowerCase(),
-          password: await hashPassword('password123')
+        //   password: await hashPassword('password123')
+            password: 'password123'
         }
       })
     );
@@ -44,7 +45,9 @@ async function main() {
       data: {
         name: faker.person.fullName(),
         email: faker.internet.email().toLowerCase(),
-        password: await hashPassword('password123')
+        // password: await hashPassword('password123')
+        password: 'password123'
+
       }
     });
     instructors.push(instructor);
@@ -58,7 +61,8 @@ async function main() {
       data: {
         name: faker.person.fullName(),
         email: faker.internet.email().toLowerCase(),
-        password: await hashPassword('password123'),
+        // password: await hashPassword('password123'),
+        password: 'password123',
         gpa: parseFloat(faker.number.float({ min: 2.0, max: 4.0, precision: 0.01 }))
       }
     });
@@ -83,6 +87,9 @@ async function main() {
         students: {
           connect: faker.helpers.arrayElements(students, { min: 5, max: 30 }).map(student => ({ id: student.id }))
         }
+      },
+      include: {
+        students: true  // Add this line to include the students relationship
       }
     });
     courses.push(course);

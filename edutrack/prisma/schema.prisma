@@ -16,22 +16,16 @@ model Course {
   name         String
   description  String
   grade        String
-  instructorId Int
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   students   Student[]
   classes    Class[]
-  instructor Instructor @relation(fields: [instructorId], references: [id])
-
-  @@index([instructorId])
 }
 
 model Class {
   id           Int      @id @default(autoincrement())
   name         String
-  courseId     Int
-  instructorId Int
   startTime    DateTime
   endTime      DateTime
   location     String
@@ -39,6 +33,8 @@ model Class {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  courseId     Int
+  instructorId Int
   course     Course     @relation(fields: [courseId], references: [id])
   instructor Instructor @relation(fields: [instructorId], references: [id])
   students   Student[]
@@ -77,6 +73,5 @@ model Instructor {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  courses Course[]
   classes Class[]
 }

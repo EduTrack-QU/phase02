@@ -32,7 +32,7 @@ A Next.js + React application for managing students, instructors, courses and cl
 10. Average grade for each instructor
 11. Average credit hours taken
 12. Top 5 Easiest/Hardest Courses
-13. Most failed course
+13. Most failed course [x]
 14. Average GPA [x]
 15. Highest GPA [x] 
 16. Student with GPA less than 2.5

@@ -18,3 +18,14 @@ export async function getHighestGpa() {
     });
     return aggregations._max.gpa;
 }
+
+export async function getLowGPAStudents(){
+    const students = await prisma.student.findMany({
+        where: {
+            gpa: {
+                lte: 2.0,
+            },
+        },
+    });
+    return students;
+}

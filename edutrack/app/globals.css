@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
 
 /* Add these styles to your globals.css */
 
@@ -9,49 +9,10 @@
     --button-primary: #1C73E7;
 }
 
-
-.header-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 2rem;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+body {
+    font-family: var(--text-font);
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.header-left h3 {
-  margin: 0;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-}
-
-.logout-button {
-  padding: 0.5rem 1rem;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.logout-button:hover {
-  background-color: #d32f2f;
-}
-
-/* Make sure images are properly contained */
-.inline-icon,
-.qu-logo {
-  display: block;
-  object-fit: contain;
-  
+h1,h2,h3,h4,h5,h6 {
+    font-family: var(--heading-font);
 }

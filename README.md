@@ -19,3 +19,17 @@ A Next.js + React application for managing students, instructors, courses and cl
 - **Database:** PostgreSQL (or SQLite / Oracle / …)  
 - **Language:** JavaScript  
 
+## Stats we are tracking
+1. The total of students per course
+2. The top 3 courses taken by the students
+3. The failure rate per course
+4. Instructor with the most courses taught
+5. Course with most/least students
+6. Class with highest/lowest attendance
+7. Peak hours for classes
+8. Course distribution by grade
+9. Average class size per instructor
+10. Average grade for each instructor
+11. Average credit hours taken
+12. Top 5 Easiest/Hardest Courses
+13. Most failed course

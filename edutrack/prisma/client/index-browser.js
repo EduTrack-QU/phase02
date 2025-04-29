@@ -130,19 +130,8 @@ exports.Prisma.ClassScalarFieldEnum = {
   endTime: 'endTime',
   location: 'location',
   status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
   courseId: 'courseId',
   instructorId: 'instructorId'
-};
-
-exports.Prisma.AdminScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  email: 'email',
-  password: 'password',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.StudentScalarFieldEnum = {
@@ -164,6 +153,15 @@ exports.Prisma.InstructorScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AdminScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -173,9 +171,9 @@ exports.Prisma.SortOrder = {
 exports.Prisma.ModelName = {
   Course: 'Course',
   Class: 'Class',
-  Admin: 'Admin',
   Student: 'Student',
-  Instructor: 'Instructor'
+  Instructor: 'Instructor',
+  Admin: 'Admin'
 };
 
 /**

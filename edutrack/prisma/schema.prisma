@@ -12,66 +12,65 @@ datasource db {
 }
 
 model Course {
-  id           Int      @id @default(autoincrement())
-  name         String
-  description  String
-  grade        String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  grade       String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
-  students   Student[]
-  classes    Class[]
+  students    Student[]  @relation("StudentCourses")
+  classes     Class[]
 }
 
 model Class {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   name         String
   startTime    DateTime
   endTime      DateTime
   location     String
   status       String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
 
   courseId     Int
   instructorId Int
-  course     Course     @relation(fields: [courseId], references: [id])
-  instructor Instructor @relation(fields: [instructorId], references: [id])
-  students   Student[]
+
+  course       Course     @relation(fields: [courseId], references: [id])
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  students     Student[]  @relation("StudentClasses")
 
   @@index([courseId])
   @@index([instructorId])
 }
 
-model Admin {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Student {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  gpa      Float
+  id           Int        @id @default(autoincrement())
+  name         String
+  email        String     @unique
+  password     String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  gpa          Float
 
-  courses Course[]
-  classes Class[]
+  courses      Course[]    @relation("StudentCourses")
+  classes      Class[]     @relation("StudentClasses")
 }
 
 model Instructor {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int        @id @default(autoincrement())
+  name         String
+  email        String     @unique
+  password     String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
-  classes Class[]
+  classes      Class[]
+}
+
+model Admin {
+  id           Int        @id @default(autoincrement())
+  name         String
+  email        String     @unique
+  password     String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }

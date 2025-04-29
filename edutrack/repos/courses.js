@@ -62,3 +62,33 @@ export async function getTopThreeCourses() {
     };
   }
   
+  export async function getMostFailedCourse() {
+    const courses = await prisma.course.findMany({
+      where: {
+        grade: 'F'
+      },
+      include: {
+        _count: {
+          select: {
+            students: true,
+          },
+        },
+      },
+      orderBy: {
+        students: {
+          _count: 'desc',
+        },
+      },
+      take: 1,
+    });
+    
+    if (courses.length === 0) {
+      return null;
+    }
+    
+    return {
+      id: courses[0].id,
+      name: courses[0].name,
+      studentCount: courses[0]._count.students,
+    };
+  }

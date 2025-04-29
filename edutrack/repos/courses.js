@@ -13,3 +13,27 @@ export async function getToatalStudentPerCourse(courseId) {
   return totalStudent.students.length;
 
 }
+
+export async function getTopThreeCourses() {
+    const courses = await prisma.course.findMany({
+      include: {
+        _count: {
+          select: {
+            students: true,
+          },
+        },
+      },
+      orderBy: {
+        students: {
+          _count: 'desc',
+        },
+      },
+      take: 3,
+    });
+    
+    return courses.map(course => ({
+      id: course.id,
+      name: course.name,
+      studentCount: course._count.students,
+    }));
+  }

@@ -21,7 +21,7 @@ A Next.js + React application for managing students, instructors, courses and cl
 
 ## Stats we are tracking
 1. The total of students per course [x] 
-2. The top 3 courses taken by the students
+2. The top 3 courses taken by the students [x]
 3. The failure rate per course
 4. Instructor with the most courses taught
 5. Course with most/least students

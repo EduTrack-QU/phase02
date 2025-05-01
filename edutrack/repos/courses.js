@@ -1,7 +1,7 @@
 import prisma from './prisma';
 
 
-export async function getToatalStudentPerCourse(courseId) {
+export async function getToatalStudentInCourse(courseId) {
   const totalStudent = await prisma.course.findUnique({
     where: {
       id: courseId,

@@ -29,3 +29,12 @@ export async function getLowGPAStudents(){
     });
     return students;
 }
+
+export async function getAllStudent() {
+    const students = await prisma.student.findMany({
+        orderBy: {
+            gpa: 'desc',
+        },
+    });
+    return students;    
+}

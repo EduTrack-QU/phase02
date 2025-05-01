@@ -29,6 +29,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -37,24 +38,32 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }
 
+// Central User model for NextAuth
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  role          String?   // "STUDENT", "INSTRUCTOR", or "ADMIN"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Auth relations
   accounts      Account[]
   sessions      Session[]
   
-  // Relations to existing user types
-  student     Student?
-  instructor  Instructor?
-  admin       Admin?
+  // Domain model relations
+  student       Student?
+  instructor    Instructor?
+  admin         Admin?
 }
 
-// Existing Application Models
+// Application Domain Models
 model Course {
   id          Int       @id @default(autoincrement())
   name        String
@@ -62,25 +71,28 @@ model Course {
   grade       String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  isActive    Boolean   @default(true)
 
   students    Student[]  @relation("StudentCourses")
   classes     Class[]
 }
 
 model Class {
-  id           Int       @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   name         String
   startTime    DateTime
   endTime      DateTime
   location     String
-  status       String
+  status       String       @default("SCHEDULED") // "SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   courseId     Int
   instructorId Int
 
-  course       Course     @relation(fields: [courseId], references: [id])
-  instructor   Instructor @relation(fields: [instructorId], references: [id])
-  students     Student[]  @relation("StudentClasses")
+  course       Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  instructor   Instructor   @relation(fields: [instructorId], references: [id], onDelete: Restrict)
+  students     Student[]    @relation("StudentClasses")
 
   @@index([courseId])
   @@index([instructorId])
@@ -88,45 +100,44 @@ model Class {
 
 model Student {
   id           Int        @id @default(autoincrement())
-  name         String
-  email        String     @unique
-  password     String
+  gpa          Float
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  gpa          Float
+  isActive     Boolean    @default(true)
 
-  // Relation to NextAuth User
-  userId       String?    @unique
-  user         User?      @relation(fields: [userId], references: [id])
+  userId       String     @unique
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   courses      Course[]   @relation("StudentCourses")
   classes      Class[]    @relation("StudentClasses")
+  
+  @@index([userId])
 }
 
 model Instructor {
   id           Int        @id @default(autoincrement())
-  name         String
-  email        String     @unique
-  password     String
+  speciality   String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  isActive     Boolean    @default(true)
 
-  // Relation to NextAuth User
-  userId       String?    @unique
-  user         User?      @relation(fields: [userId], references: [id])
+  userId       String     @unique
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   classes      Class[]
+  
+  @@index([userId])
 }
 
 model Admin {
   id           Int        @id @default(autoincrement())
-  name         String
-  email        String     @unique
-  password     String
+  permissions  String?    // Could be JSON or specific permissions
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  isActive     Boolean    @default(true)
 
-  // Relation to NextAuth User
-  userId       String?    @unique
-  user         User?      @relation(fields: [userId], references: [id])
+  userId       String     @unique
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }

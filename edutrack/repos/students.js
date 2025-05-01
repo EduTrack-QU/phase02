@@ -1,5 +1,13 @@
 import prisma from './prisma';
 
+export async function getAllStudent() {
+    const students = await prisma.student.findMany({
+        orderBy: {
+            gpa: 'desc',
+        },
+    });
+    return students;    
+}
 
 export async function getAverageGpa(){
     const aggregations = await prisma.student.aggregate({
@@ -23,18 +31,20 @@ export async function getLowGPAStudents(){
     const students = await prisma.student.findMany({
         where: {
             gpa: {
-                lte: 2.0,
+                lte: 2.5,
             },
         },
     });
     return students;
 }
 
-export async function getAllStudent() {
+export async function getDeansList(){
     const students = await prisma.student.findMany({
-        orderBy: {
-            gpa: 'desc',
+        where: {
+            gpa: {
+                gte: 3.5,
+            },
         },
     });
-    return students;    
+    return students;
 }

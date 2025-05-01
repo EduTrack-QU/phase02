@@ -162,7 +162,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\ggmin\\OneDrive\\Documents\\QU\\Spring-2025\\web dev\\project\\phase02\\edutrack\\prisma\\client",
+      "value": "C:\\Web350\\phase02\\edutrack\\prisma\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -176,12 +176,12 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "C:\\Users\\ggmin\\OneDrive\\Documents\\QU\\Spring-2025\\web dev\\project\\phase02\\edutrack\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Web350\\phase02\\edutrack\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
     "rootEnvPath": null,
-    "schemaEnvPath": "../../.env"
+    "schemaEnvPath": "../.env"
   },
   "relativePath": "..",
   "clientVersion": "6.7.0",

@@ -35,6 +35,6 @@ A Next.js + React application for managing students, instructors, courses and cl
 13. Most failed course [x]
 14. Average GPA [x]
 15. Highest GPA [x] 
-16. Student with GPA less than 2.5
+16. Student with GPA less than 2.5 [x]
 17. Student with GPA higher than 3.5
 18. hightst/lowest grade in all course for each student 

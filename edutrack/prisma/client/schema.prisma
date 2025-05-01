@@ -11,6 +11,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// NextAuth Models
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+
+  // Relations to existing user types
+  student    Student?
+  instructor Instructor?
+  admin      Admin?
+}
+
+// Existing Application Models
 model Course {
   id          Int      @id @default(autoincrement())
   name        String
@@ -51,6 +95,10 @@ model Student {
   updatedAt DateTime @updatedAt
   gpa       Float
 
+  // Relation to NextAuth User
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id])
+
   courses Course[] @relation("StudentCourses")
   classes Class[]  @relation("StudentClasses")
 }
@@ -63,6 +111,10 @@ model Instructor {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Relation to NextAuth User
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id])
+
   classes Class[]
 }
 
@@ -73,4 +125,8 @@ model Admin {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relation to NextAuth User
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id])
 }

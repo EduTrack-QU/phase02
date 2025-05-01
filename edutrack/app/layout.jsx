@@ -4,6 +4,8 @@ import "./globals.css";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import AuthProvider from './providers/AuthProvider';
+
 
 const Header = () => {
   const pathname = usePathname();
@@ -67,8 +69,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased">
-        <Header/>
-        <main>{children}</main>
+        <AuthProvider>
+          <Header/>
+          <main>{children}</main>
+        </AuthProvider>
       </body>
     </html>
   );

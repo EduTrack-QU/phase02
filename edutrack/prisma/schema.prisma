@@ -15,17 +15,17 @@ datasource db {
 model Account {
   id                String  @id @default(cuid())
   userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? 
-  access_token      String? 
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? 
-  session_state     String?
-
+  type              String  // Will be "oauth" for GitHub
+  provider          String  // Will be "github"
+  providerAccountId String  // GitHub user ID
+  
+  // GitHub OAuth specific fields
+  access_token      String? // GitHub access token
+  expires_at        Int?    // When the token expires
+  scope             String? // GitHub scopes granted
+  refresh_token     String? // Usually not used with GitHub but keep for flexibility
+  
+  // Relation to User
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
@@ -47,8 +47,6 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  emailVerified DateTime?
-  image         String?
   role          String?   // "STUDENT", "INSTRUCTOR", or "ADMIN"
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -66,37 +64,67 @@ model User {
 // Application Domain Models
 model Course {
   id          Int       @id @default(autoincrement())
-  name        String
-  courseCode  String   @unique
+  name        String    // e.g., "Introduction to Computer Science"
+  courseCode  String    @unique // e.g., "CS101"
   description String
-  grade       String
+  credits     Int       // Number of credit hours
+  department  String    // e.g., "Computer Science"
+  level       String    // e.g., "Undergraduate", "Graduate"
+
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   isActive    Boolean   @default(true)
 
-  students    Student[]  @relation("StudentCourses")
-  classes     Class[]
+  // Relations
+  sections    Section[] // Specific offerings of this course
 }
 
-model Class {
+model Section {
   id           Int          @id @default(autoincrement())
-  name         String
-  startTime    DateTime
-  endTime      DateTime
-  location     String
+  sectionNumber String      // e.g., "001", "002"
+  term         String       // e.g., "Fall 2025", "Spring 2026"
+  startDate    DateTime
+  endDate      DateTime
+  schedule     String       // e.g., "MWF 10:00-11:15"
+  location     String       // e.g., "Science Building 305"
+  capacity     Int
+  enrolledCount Int         @default(0)
   status       String       @default("SCHEDULED") // "SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"
+
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
+  // Foreign keys
   courseId     Int
   instructorId Int
 
+  // Relations
   course       Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
   instructor   Instructor   @relation(fields: [instructorId], references: [id], onDelete: Restrict)
-  students     Student[]    @relation("StudentClasses")
+  enrollments  Enrollment[]
 
   @@index([courseId])
   @@index([instructorId])
+}
+
+model Enrollment {
+  id        Int      @id @default(autoincrement())
+  status    String   @default("ENROLLED") // "ENROLLED", "DROPPED", "WAITLISTED"
+  grade     String?  // "A", "B+", "C", etc. - nullable until graded
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Foreign keys
+  studentId Int
+  sectionId Int
+
+  // Relations
+  student   Student  @relation(fields: [studentId], references: [id])
+  section   Section  @relation(fields: [sectionId], references: [id])
+
+  @@unique([studentId, sectionId]) // Each student can only enroll once in a given section
+  @@index([studentId])
+  @@index([sectionId])
 }
 
 model Student {
@@ -109,9 +137,8 @@ model Student {
   userId       String     @unique
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  courses      Course[]   @relation("StudentCourses")
-  classes      Class[]    @relation("StudentClasses")
-  
+  enrollments  Enrollment[]
+
   @@index([userId])
 }
 
@@ -125,8 +152,8 @@ model Instructor {
   userId       String     @unique
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  classes      Class[]
-  
+  sections     Section[]
+
   @@index([userId])
 }
 

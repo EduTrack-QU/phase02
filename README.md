@@ -20,21 +20,18 @@ A Next.js + React application for managing students, instructors, courses and cl
 - **Language:** JavaScript  
 
 ## Stats we are tracking
-1. The total of students in a course [x] 
-2. The top 3 courses taken by the students [x]
-3. The failure rate per course
-4. Instructor with the most courses taught
-5. Course with most/least students [x]
-6. Class with highest/lowest attendance
-7. Peak hours for classes
-8. Course distribution by grade
-9. Average class size per instructor
-10. Average grade for each instructor
-11. Average credit hours taken
-12. Top 5 Easiest/Hardest Courses
-13. Most failed course [x]
-14. Average GPA [x]
-15. Highest GPA [x] 
-16. Student with GPA less than 2.5 [x]
-17. Student with GPA higher than 3.5
-18. hightst/lowest grade in all course for each student 
+1.  [ ] Failure rate per course
+2.  [x] Most failed course
+3.  [x] Course with most/least students
+4.  [x] GPA stats (Highest GPA, Average GPA, Student with GPA less than 2.5 )
+5.  [x] Total number of students in a course
+6.  [ ] Course distribution by grade
+7.  [ ] Average GPA per instructor && Average grade for each instructor
+8.  [ ] Dean's List students
+9.  [ ] Peak hours for classes
+10. [ ] Instructor with the most courses taught
+11. [ ] Highest/lowest grade in all courses for each student
+12. [ ] Average credit hours taken
+13. [ ] Average class size per instructor
+14. [ ] Class with highest/lowest attendance
+15. [ ] The top 3 courses taken by the students

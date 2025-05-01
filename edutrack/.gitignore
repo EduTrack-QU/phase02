@@ -21,7 +21,8 @@
 /build
 
 # prisma
-/prisma/client
+
+/prisma/client/
 
 # misc
 .DS_Store

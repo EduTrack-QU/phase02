@@ -1,10 +1,10 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// generator client {
-//   provider = "prisma-client-js"
-//   output   = "./client"
-// }
+generator client {
+  provider = "prisma-client-js"
+  output   = "./client"
+}
 
 datasource db {
   provider = "sqlite"
@@ -47,9 +47,11 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
+  emailVerified DateTime?
+  image         String?   // URL to the user's profile image
   role          String?   // "STUDENT", "INSTRUCTOR", or "ADMIN"
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  updatedAt     DateTime?  @updatedAt
   
   // Auth relations
   accounts      Account[]
@@ -129,6 +131,7 @@ model Enrollment {
 
 model Student {
   id           Int        @id @default(autoincrement())
+  name         String
   gpa          Float
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -144,6 +147,7 @@ model Student {
 
 model Instructor {
   id           Int        @id @default(autoincrement())
+  name         String
   speciality   String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -159,6 +163,7 @@ model Instructor {
 
 model Admin {
   id           Int        @id @default(autoincrement())
+  name        String
   permissions  String?    // Could be JSON or specific permissions
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt

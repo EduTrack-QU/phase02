@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GithubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from '@/repos/prisma'; // Import the shared prisma client
-import bcrypt from "bcrypt";
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -24,47 +23,44 @@ export const authOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
-        userType: { label: "User Type", type: "text" }
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password || !credentials?.userType) {
+        if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
-        let user = null;
-        
-        // Check which user type is logging in
-        if (credentials.userType === "student") {
-          user = await prisma.student.findUnique({
-            where: { email: credentials.email }
-          });
-        } else if (credentials.userType === "instructor") {
-          user = await prisma.instructor.findUnique({
-            where: { email: credentials.email }
-          });
-        } else if (credentials.userType === "admin") {
-          user = await prisma.admin.findUnique({
-            where: { email: credentials.email }
-          });
-        }
+        // Find the user by email
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+          include: {
+            student: true,
+            instructor: true,
+            admin: true
+          }
+        });
 
         if (!user) {
           return null;
         }
 
-        // Verify password
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
-        
-        if (!isPasswordValid) {
+        // Basic password check - for a simple project
+        if (user.password !== credentials.password) {
           return null;
         }
-
+        
+        // Determine role based on related profiles
+        let role = "USER";
+        if (user.admin) role = "ADMIN";
+        else if (user.instructor) role = "INSTRUCTOR";
+        else if (user.student) role = "STUDENT";
+        
         return {
-          id: user.id.toString(),
+          id: user.id,
           name: user.name,
           email: user.email,
-          role: credentials.userType,
+          image: user.image,
+          role: role
         };
       }
     })
@@ -74,18 +70,17 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user, account }) {
-      // Add role and user ID to the token when user signs in
+      // Add role to the token when user signs in
       if (user) {
         token.role = user.role;
-        token.userId = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      // Send role and user ID to the client
+      // Send role to the client
       if (session.user) {
         session.user.role = token.role;
-        session.user.id = token.userId;
+        session.user.id = token.sub; // Use the JWT subject (user id)
       }
       return session;
     },

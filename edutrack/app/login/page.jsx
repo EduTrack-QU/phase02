@@ -17,6 +17,19 @@ export default function LoginPage() {
     setLoading(true);
     setError('');
 
+    // Validate inputs before submitting
+    if (!email.trim()) {
+      setError('Email is required');
+      setLoading(false);
+      return;
+    }
+    
+    if (!password.trim()) {
+      setError('Password is required');
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = await signIn('credentials', {
         redirect: false,
@@ -25,7 +38,7 @@ export default function LoginPage() {
       });
 
       if (result.error) {
-        setError('Invalid credentials');
+        setError('Invalid email or password');
         setLoading(false);
         return;
       }
@@ -33,7 +46,8 @@ export default function LoginPage() {
       router.push('/dashboard');
       router.refresh();
     } catch (error) {
-      setError('An error occurred during login');
+      console.error('Login error:', error);
+      setError('An error occurred during login. Please try again.');
       setLoading(false);
     }
   };

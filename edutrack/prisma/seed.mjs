@@ -1,6 +1,7 @@
 import { PrismaClient } from './client/index.js';
 import { faker } from '@faker-js/faker';
 
+
 const prisma = new PrismaClient();
 
 // Configuration
@@ -8,7 +9,6 @@ const STUDENT_COUNT = 50;
 const INSTRUCTOR_COUNT = 10;
 const COURSE_COUNT = 10;
 const SECTION_COUNT = 20;
-
 async function main() {
   console.log('Starting database seeding...');
 
@@ -20,6 +20,7 @@ async function main() {
         name: 'ansari',
         email: 'ansari@qu.edu.qa',
         role: 'ADMIN',
+        password: 'admin123',
       }
     });
 
@@ -30,8 +31,11 @@ async function main() {
         permissions: 'FULL_ACCESS',
         isActive: true,
         userId: adminUser.id
+
       }
     });
+
+
 
     // Create instructor users
     console.log('Creating instructor users...');
@@ -43,6 +47,7 @@ async function main() {
           name: fullName,
           email: faker.internet.email({ firstName: fullName.split(' ')[0], lastName: fullName.split(' ')[1] }).toLowerCase(),
           role: 'INSTRUCTOR',
+          password: 'instructor123',
         }
       });
 
@@ -70,6 +75,7 @@ async function main() {
           name: fullName,
           email: faker.internet.email({ firstName: fullName.split(' ')[0], lastName: fullName.split(' ')[1] }).toLowerCase(),
           role: 'STUDENT',
+          password: 'student123',
         }
       });
 
@@ -119,7 +125,7 @@ async function main() {
 
     for (let i = 0; i < SECTION_COUNT; i++) {
       const term = faker.helpers.arrayElement(terms);
-      
+
       // Set appropriate dates based on term
       let startDate, endDate;
       if (term === 'Fall 2025') {
@@ -132,6 +138,9 @@ async function main() {
         startDate = new Date('2026-06-01');
         endDate = new Date('2026-08-01');
       }
+
+
+
 
       // Add some randomness to dates
       startDate.setDate(startDate.getDate() + faker.number.int({ min: 0, max: 5 }));
@@ -196,6 +205,8 @@ async function main() {
         }
       }
 
+
+
       // Update enrolled count for the section
       const actualEnrolled = await prisma.enrollment.count({
         where: {
@@ -224,4 +235,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-  });
+  })

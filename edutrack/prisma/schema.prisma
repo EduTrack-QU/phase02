@@ -13,18 +13,18 @@ datasource db {
 
 // NextAuth Models
 model Account {
-  id                String  @id @default(cuid())
+  id                String @id @default(cuid())
   userId            String
-  type              String  // Will be "oauth" for GitHub
-  provider          String  // Will be "github"
-  providerAccountId String  // GitHub user ID
-  
+  type              String // Will be "oauth" for GitHub
+  provider          String // Will be "github"
+  providerAccountId String // GitHub user ID
+
   // GitHub OAuth specific fields
-  access_token      String? // GitHub access token
-  expires_at        Int?    // When the token expires
-  scope             String? // GitHub scopes granted
-  refresh_token     String? // Usually not used with GitHub but keep for flexibility
-  
+  access_token  String? // GitHub access token
+  expires_at    Int? // When the token expires
+  scope         String? // GitHub scopes granted
+  refresh_token String? // Usually not used with GitHub but keep for flexibility
+
   // Relation to User
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -38,73 +38,73 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+
   @@index([userId])
 }
 
 // Central User model for NextAuth
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String?   // Adding password field for credential auth
+  id    String  @id @default(cuid())
+  name  String?
+  email String? @unique
+  password String? // For local authentication
   emailVerified DateTime?
-  image         String?   // URL to the user's profile image
-  role          String?   // "STUDENT", "INSTRUCTOR", or "ADMIN"
+  image         String? // URL to the user's profile image
+  role          String? // "STUDENT", "INSTRUCTOR", or "ADMIN"
   createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
-  
+
   // Auth relations
-  accounts      Account[]
-  sessions      Session[]
-  
+  accounts Account[]
+  sessions Session[]
+
   // Domain model relations
-  student       Student?
-  instructor    Instructor?
-  admin         Admin?
+  student    Student?
+  instructor Instructor?
+  admin      Admin?
 }
 
 // Application Domain Models
 model Course {
-  id          Int       @id @default(autoincrement())
-  name        String    // e.g., "Introduction to Computer Science"
-  courseCode  String    @unique // e.g., "CS101"
+  id          Int    @id @default(autoincrement())
+  name        String // e.g., "Introduction to Computer Science"
+  courseCode  String @unique // e.g., "CS101"
   description String
-  credits     Int       // Number of credit hours
-  department  String    // e.g., "Computer Science"
-  level       String    // e.g., "Undergraduate", "Graduate"
+  credits     Int // Number of credit hours
+  department  String // e.g., "Computer Science"
+  level       String // e.g., "Undergraduate", "Graduate"
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  isActive    Boolean   @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
 
   // Relations
-  sections    Section[] // Specific offerings of this course
+  sections Section[] // Specific offerings of this course
 }
 
 model Section {
-  id           Int          @id @default(autoincrement())
-  sectionNumber String      // e.g., "001", "002"
-  term         String       // e.g., "Fall 2025", "Spring 2026"
-  startDate    DateTime
-  endDate      DateTime
-  schedule     String       // e.g., "MWF 10:00-11:15"
-  location     String       // e.g., "Science Building 305"
-  capacity     Int
-  enrolledCount Int         @default(0)
-  status       String       @default("SCHEDULED") // "SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"
+  id            Int      @id @default(autoincrement())
+  sectionNumber String // e.g., "001", "002"
+  term          String // e.g., "Fall 2025", "Spring 2026"
+  startDate     DateTime
+  endDate       DateTime
+  schedule      String // e.g., "MWF 10:00-11:15"
+  location      String // e.g., "Science Building 305"
+  capacity      Int
+  enrolledCount Int      @default(0)
+  status        String   @default("SCHEDULED") // "SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"
 
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Foreign keys
   courseId     Int
   instructorId Int
 
   // Relations
-  course       Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  instructor   Instructor   @relation(fields: [instructorId], references: [id], onDelete: Restrict)
-  enrollments  Enrollment[]
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  instructor  Instructor   @relation(fields: [instructorId], references: [id], onDelete: Restrict)
+  enrollments Enrollment[]
 
   @@index([courseId])
   @@index([instructorId])
@@ -113,7 +113,7 @@ model Section {
 model Enrollment {
   id        Int      @id @default(autoincrement())
   status    String   @default("ENROLLED") // "ENROLLED", "DROPPED", "WAITLISTED"
-  grade     String?  // "A", "B+", "C", etc. - nullable until graded
+  grade     String? // "A", "B+", "C", etc. - nullable until graded
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -122,8 +122,8 @@ model Enrollment {
   sectionId Int
 
   // Relations
-  student   Student  @relation(fields: [studentId], references: [id])
-  section   Section  @relation(fields: [sectionId], references: [id])
+  student Student @relation(fields: [studentId], references: [id])
+  section Section @relation(fields: [sectionId], references: [id])
 
   @@unique([studentId, sectionId]) // Each student can only enroll once in a given section
   @@index([studentId])
@@ -131,47 +131,47 @@ model Enrollment {
 }
 
 model Student {
-  id           Int        @id @default(autoincrement())
-  name         String
-  gpa          Float
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  isActive     Boolean    @default(true)
+  id        Int      @id @default(autoincrement())
+  name      String
+  gpa       Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true)
 
-  userId       String     @unique
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  enrollments  Enrollment[]
+  enrollments Enrollment[]
 
   @@index([userId])
 }
 
 model Instructor {
-  id           Int        @id @default(autoincrement())
-  name         String
-  speciality   String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  isActive     Boolean    @default(true)
+  id         Int      @id @default(autoincrement())
+  name       String
+  speciality String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isActive   Boolean  @default(true)
 
-  userId       String     @unique
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  sections     Section[]
+  sections Section[]
 
   @@index([userId])
 }
 
 model Admin {
-  id           Int        @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
-  permissions  String?    // Could be JSON or specific permissions
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  isActive     Boolean    @default(true)
+  permissions String? // Could be JSON or specific permissions
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isActive    Boolean  @default(true)
 
-  userId       String     @unique
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }

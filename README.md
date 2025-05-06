@@ -29,7 +29,7 @@ A Next.js + React application for managing students, instructors, courses and cl
 7.  [x] Average grade for each instructor
 8.  [x] Dean's List students
 9.  [ ] Peak hours for classes
-10. [ ] Instructor with the most courses taught
+10. [x] Instructor with the most courses taught
 11. [ ] Highest/lowest grade in all courses for each student
 12. [ ] Average credit hours taken
 13. [ ] Average class size per instructor

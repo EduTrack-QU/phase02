@@ -26,10 +26,10 @@ A Next.js + React application for managing students, instructors, courses and cl
 4.  [x] GPA stats (Highest GPA, Average GPA, Student with GPA less than 2.5 )
 5.  [x] Total number of students in a course
 6.  [ ] Course distribution by grade
-7.  [ ] Average grade for each instructor
+7.  [x] Average grade for each instructor
 8.  [x] Dean's List students
 9.  [ ] Peak hours for classes
-10. [ ] Instructor with the most courses taught
+10. [x] Instructor with the most courses taught
 11. [ ] Highest/lowest grade in all courses for each student
 12. [ ] Average credit hours taken
 13. [ ] Average class size per instructor

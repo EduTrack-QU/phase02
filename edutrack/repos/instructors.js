@@ -10,6 +10,15 @@ export async function getAllInstructors() {
     return instructors;    
 }
 
+export async function getInstructorById(id) {
+    const instructor = await prisma.instructor.findUnique({
+        where: {
+            id: id,
+        },
+    });
+    return instructor;
+}
+
 export async function getAverageGrade(){
     const instructors = await getAllInstructors();
     

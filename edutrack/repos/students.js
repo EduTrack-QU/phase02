@@ -8,6 +8,15 @@ export async function getAllStudent() {
     });
     return students;    
 }
+//get student by id
+export async function getStudentById(id) {
+    const student = await prisma.student.findUnique({
+        where: {
+            id: id,
+        },
+    });
+    return student;
+}
 
 export async function getAverageGpa(){
     const aggregations = await prisma.student.aggregate({

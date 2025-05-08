@@ -1,46 +1,51 @@
 "use client";
 
-import React from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import LogoutButton from '../components/LogoutButton';
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login');
+    // Only check for admin role, middleware handles authentication
+    if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
+      router.push('/login?error=admin_required');
     }
-  }, [status, router]);
+  }, [session, status, router]);
 
+  // Display loading state
   if (status === 'loading') {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   }
 
+  // Only show dashboard if authenticated and admin
+  if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
+    return (
+      <div className="p-8">
+        <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
+        <p className="mb-4">Welcome, {session.user.name || session.user.email}</p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <DashboardCard title="Students" count="..." link="#" />
+          <DashboardCard title="Instructors" count="..." link="#" />
+          <DashboardCard title="Courses" count="..." link="#" />
+        </div>
+      </div>
+    );
+  }
+
+  // Return loading UI while redirects happen
+  return <div className="flex justify-center items-center min-h-screen">Checking authorization...</div>;
+}
+
+function DashboardCard({ title, count, link }) {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-sm p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">EduTrack Dashboard</h1>
-          <div className="flex items-center space-x-4">
-            <LogoutButton />
-          </div>
-        </div>
-      </nav>
-
-      <main className="container mx-auto py-8 px-4">
-        <h2 className="text-2xl font-semibold mb-6">Welcome, {session.user.name}!</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium mb-2">Quick Actions</h3>
-          </div>
-          {/* Add more dashboard widgets here */}
-        </div>
-      </main>
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-xl font-semibold mb-2">{title}</h2>
+      <p className="text-3xl font-bold mb-4">{count}</p>
+      <a href={link} className="text-blue-600 hover:underline">Manage {title}</a>
     </div>
   );
 }

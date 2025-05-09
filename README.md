@@ -30,8 +30,9 @@ A Next.js + React application for managing students, instructors, courses and cl
 8.  [x] Dean's List students
 9.  [ ] Peak hours for classes
 10. [x] Instructor with the most courses taught
-11. [ ] Highest/lowest grade in all courses for each student
-12. [ ] Average credit hours taken
-13. [ ] Average class size per instructor
-14. [ ] Class with highest/lowest attendance
-15. [ ] The top 3 courses taken by the students
+-------
+12. [ ] Highest/lowest grade in all courses for each student
+13. [ ] Average credit hours taken
+14. [ ] Average class size per instructor
+15. [ ] Class with highest/lowest attendance
+16. [ ] The top 3 courses taken by the students

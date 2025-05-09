@@ -4,30 +4,31 @@ import "./globals.css";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import AuthProvider from './providers/AuthProvider';
-
+import { useSession, signOut } from "next-auth/react";
+import AuthProvider from './components/AuthProvider';
 
 const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const isLoginPage = pathname === "/" || pathname === "/login";
-  
-  const handleLogout = () => {
-    console.log("Logout clicked");
-    localStorage.removeItem("token");
-    // Redirect to login page after logout
-    router.push("/");
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
+  const isAuthenticated = status === "authenticated";
+  const isLoginPage = pathname === "/" || pathname === "/login" || pathname === "/unauthorized";
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/login");
   };
 
   return (
     <div className="header-container py-4 px-6 md:px-10 flex justify-between items-center">
       <div className="header-left flex items-center gap-4">
-        <Image 
-          src="/media/cap.svg" 
-          alt="cap icon" 
+        <Image
+          src="/media/cap.svg"
+          alt="cap icon"
           width={48}
           height={48}
-          className="inline-icon" 
+          className="inline-icon"
         />
         <h3 className="text-2xl md:text-3xl font-bold">
           {isLoginPage ? (
@@ -41,26 +42,32 @@ const Header = () => {
           )}
         </h3>
       </div>
-      
+
       <div className="header-center">
-        <Image 
-          src="/media/qulogo.png" 
-          alt="QU logo" 
-          width={180} 
-          height={72} 
-          className="qu-logo" 
+        <Image
+          src="/media/qulogo.png"
+          alt="QU logo"
+          width={180}
+          height={72}
+          className="qu-logo"
         />
       </div>
-      {isLoginPage ? null : (
-      <div className="header-right">
-        {/* Always show logout button in top right */}
-        <button 
-          onClick={handleLogout} 
-          className="logout-button bg-red-600 hover:bg-red-700 text-white px-5 py-2 text-lg font-medium rounded-md transition-colors duration-200 shadow-sm"
-        >
-          Logout
-        </button>
-      </div>)}
+
+      {!isLoginPage && isAuthenticated && (
+        <div className="header-right flex items-center gap-4">
+          {session?.user?.name && (
+            <span className="text-gray-700">
+              {session.user.name} {session.user.role === 'ADMIN' ? '(Admin)' : ''}
+            </span>
+          )}
+          <button
+            onClick={handleLogout}
+            className="logout-button bg-red-600 hover:bg-red-700 text-white px-5 py-2 text-lg font-medium rounded-md transition-colors duration-200 shadow-sm"
+          >
+            Logout
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -70,7 +77,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="antialiased">
         <AuthProvider>
-          <Header/>
+          <Header />
           <main>{children}</main>
         </AuthProvider>
       </body>

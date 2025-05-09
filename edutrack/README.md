@@ -15,8 +15,8 @@ NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET="your-secret-key-here"
 
 # GitHub OAuth
-GITHUB_ID="your-github-client-id"
-GITHUB_SECRET="your-github-client-secret"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
 ```
 
 ## Setting Up GitHub OAuth

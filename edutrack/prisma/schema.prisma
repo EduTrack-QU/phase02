@@ -21,9 +21,12 @@ model Account {
 
   // GitHub OAuth specific fields
   access_token  String? // GitHub access token
+  token_type    String? // Token type (usually "bearer" for GitHub)
   expires_at    Int? // When the token expires
   scope         String? // GitHub scopes granted
   refresh_token String? // Usually not used with GitHub but keep for flexibility
+  id_token      String? // OpenID Connect ID token
+  session_state String? // Session state for some providers
 
   // Relation to User
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -44,10 +47,10 @@ model Session {
 
 // Central User model for NextAuth
 model User {
-  id    String  @id @default(cuid())
-  name  String?
-  email String? @unique
-  password String? // For local authentication
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  password      String? // For local authentication
   emailVerified DateTime?
   image         String? // URL to the user's profile image
   role          String? // "STUDENT", "INSTRUCTOR", or "ADMIN"

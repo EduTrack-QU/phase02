@@ -9,16 +9,15 @@ export const authOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
         GithubProvider({
-            clientId: process.env.GITHUB_ID,
-            clientSecret: process.env.GITHUB_SECRET,
-            // GitHub OAuth will not provide a password, so we only handle profile data
+            clientId: process.env.GITHUB_CLIENT_ID,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET,
             profile(profile) {
                 return {
                     id: profile.id.toString(),
                     name: profile.name || profile.login,
                     email: profile.email,
                     image: profile.avatar_url,
-                    role: "USER", // Default role, will be updated in callbacks
+                    role: "USER",
                 };
             },
         }),
@@ -77,36 +76,86 @@ export const authOptions = {
         }),
     ],
     callbacks: {
-        async jwt({ token, user, account }) {
-            if (user) {
-                token.role = user.role;
+        async signIn({ user, account, profile }) {
+            // Only proceed with GitHub sign-ins
+            if (account.provider === 'github') {
+                try {
+                    const email = profile.email;
 
-                // If this is a new GitHub login, we need to either link to an existing account
-                // or create a new user with the default role
-                if (account?.provider === 'github') {
+                    // Check if this GitHub email already exists in our database
                     const existingUser = await prisma.user.findUnique({
-                        where: { email: user.email },
+                        where: { email }
                     });
 
-                    // If user exists but logged in via GitHub for the first time
-                    if (existingUser && !existingUser.role) {
-                        await prisma.user.update({
-                            where: { id: existingUser.id },
-                            data: { role: 'USER' },
+                    if (existingUser) {
+                        // Update the existing user with GitHub details if they don't have them
+                        if (!existingUser.image || !existingUser.name) {
+                            await prisma.user.update({
+                                where: { id: existingUser.id },
+                                data: {
+                                    name: existingUser.name || profile.name || profile.login,
+                                    image: existingUser.image || profile.avatar_url,
+                                    role: existingUser.role || 'USER'
+                                }
+                            });
+                        }
+                        // Link accounts if not already linked
+                        const linkedAccount = await prisma.account.findFirst({
+                            where: {
+                                userId: existingUser.id,
+                                provider: 'github'
+                            }
                         });
-                        token.role = 'USER';
+
+                        if (!linkedAccount) {
+                            await prisma.account.create({
+                                data: {
+                                    userId: existingUser.id,
+                                    type: account.type,
+                                    provider: account.provider,
+                                    providerAccountId: account.providerAccountId,
+                                    access_token: account.access_token,
+                                    expires_at: account.expires_at,
+                                    token_type: account.token_type,
+                                    scope: account.scope,
+                                    refresh_token: account.refresh_token
+                                }
+                            });
+                        }
                     }
+                    // If no existing user, the adapter will create one
+                } catch (error) {
+                    console.error('Error in GitHub signIn callback:', error);
+                    return false;
                 }
+            }
+            return true;
+        },
+        async jwt({ token, user, account }) {
+            if (user) {
+                token.role = user.role || 'USER';
+                token.id = user.id;
             }
             return token;
         },
         async session({ session, token }) {
             if (token && session.user) {
-                session.user.id = token.sub;
-                session.user.role = token.role;
+                session.user.id = token.id || token.sub;
+                session.user.role = token.role || 'USER';
             }
             return session;
         },
+    },
+    events: {
+        async createUser({ user }) {
+            // Make sure new users created through GitHub have the USER role
+            if (!user.role) {
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: { role: 'USER' }
+                });
+            }
+        }
     },
     pages: {
         signIn: '/login',
@@ -114,6 +163,7 @@ export const authOptions = {
     },
     session: {
         strategy: 'jwt',
+        maxAge: 30 * 24 * 60 * 60, // 30 days
     },
     secret: process.env.NEXTAUTH_SECRET,
     debug: process.env.NODE_ENV === 'development',

@@ -169,7 +169,7 @@ export async function getGradeDistributionForCourse(courseCode) {
 }
 export async function getFailureRateForCourse(courseCode) {
     const course = await prisma.course.findUnique({
-        where: { courseCode }
+        where: { id:courseCode }
     });
 
     if (!course) return null;

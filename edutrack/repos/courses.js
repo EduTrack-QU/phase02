@@ -1,94 +1,114 @@
 import prisma from './prisma';
 
+export async function getTotalStudentsInCourse(courseId) {
+    const sections = await prisma.section.findMany({
+        where: { courseId },
+        include: { enrollments: true }
+    });
 
-export async function getToatalStudentInCourse(courseId) {
-  const totalStudent = await prisma.course.findUnique({
-    where: {
-      id: courseId,
-    },
-    select: {
-      students: true,
-    },
-  });
-  return totalStudent.students.length;
+    let totalStudents = 0;
+    for (const section of sections) {
+        totalStudents += section.enrollments.length;
+    }
 
+    return totalStudents;
 }
 
 export async function getTopThreeCourses() {
     const courses = await prisma.course.findMany({
-      include: {
-        _count: {
-          select: {
-            students: true,
-          },
-        },
-      },
-      orderBy: {
-        students: {
-          _count: 'desc',
-        },
-      },
-      take: 3,
+        include: {
+            sections: {
+                include: { enrollments: true }
+            }
+        }
     });
-    
-    return courses.map(course => ({
-      id: course.id,
-      name: course.name,
-      studentCount: course._count.students,
-    }));
-  }
 
-  export async function getCoursesWithMostAndLeastStudents() {
+    const sorted = courses.map(c => ({
+        id: c.id,
+        name: c.name,
+        courseCode: c.courseCode,
+        studentCount: c.sections.reduce((acc, sec) => acc + sec.enrollments.length, 0)
+    })).sort((a, b) => b.studentCount - a.studentCount);
+
+    return sorted.slice(0, 3);
+}
+
+export async function getCoursesWithMostAndLeastStudents() {
     const courses = await prisma.course.findMany({
-      include: {
-        _count: {
-          select: { students: true },
-        },
-      },
-      orderBy: {
-        students: { _count: 'desc' },
-      }
+        include: {
+            sections: {
+                include: { enrollments: true }
+            }
+        }
     });
-  
-    const formatCourse = (course) => course ? ({
-      id: course.id,
-      name: course.name,
-      studentCount: course._count.students
-    }) : null;
-  
+
+    const mapped = courses.map(c => ({
+        id: c.id,
+        courseCode: c.courseCode,
+        studentCount: c.sections.reduce((acc, sec) => acc + sec.enrollments.length, 0)
+    }));
+
+    if (mapped.length === 0) return { mostStudents: null, leastStudents: [] };
+
+    const sorted = [...mapped].sort((a, b) => b.studentCount - a.studentCount);
+
+    const max = sorted[0];
+    const minCount = sorted[sorted.length - 1].studentCount;
+    const leastCourses = mapped.filter(c => c.studentCount === minCount);
+
     return {
-      mostStudents: formatCourse(courses[0]),
-      leastStudents: formatCourse(courses[courses.length - 1]),
+        mostStudents: max,
+        leastStudents: leastCourses
     };
-  }
-  
-  export async function getMostFailedCourse() {
-    const courses = await prisma.course.findMany({
-      where: {
-        grade: 'F'
-      },
-      include: {
-        _count: {
-          select: {
-            students: true,
-          },
+}
+
+export async function getMostFailedCourse() {
+    // Get all enrollments
+    const failedEnrollments = await prisma.enrollment.findMany({
+        where: {
+            grade: {
+                not: null
+            }
         },
-      },
-      orderBy: {
-        students: {
-          _count: 'desc',
-        },
-      },
-      take: 1,
+        select: {
+            grade: true,
+            section: {
+                select: {
+                    courseId: true,
+                    course: { select: { id: true, courseCode: true } }
+                }
+            }
+        }
     });
-    
-    if (courses.length === 0) {
-      return null;
+
+    // Filter F grades manually because Prisma 6.7.0 cannot do case-insensitive
+    const fEnrollments = failedEnrollments.filter(e =>
+        e.grade.trim().toUpperCase() === 'F'
+    );
+
+    if (fEnrollments.length === 0) return null;
+
+    // Aggregate
+    const failureCounts = {};
+    for (const enrollment of fEnrollments) {
+        const courseId = enrollment.section.courseId;
+        if (!failureCounts[courseId]) {
+            failureCounts[courseId] = {
+                id: enrollment.section.course.id,
+                courseCode: enrollment.section.course.courseCode,
+                failedCount: 0
+            };
+        }
+        failureCounts[courseId].failedCount++;
     }
-    
-    return {
-      id: courses[0].id,
-      name: courses[0].name,
-      studentCount: courses[0]._count.students,
-    };
-  }
+
+    const mostFailed = Object.values(failureCounts).sort((a, b) => b.failedCount - a.failedCount)[0];
+    return mostFailed;
+}
+
+
+export async function getAllCourses() {
+    return prisma.course.findMany({
+        select: { id: true, name: true, courseCode: true }
+    });
+}

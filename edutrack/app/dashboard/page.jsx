@@ -2,25 +2,20 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-
     if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
       router.push('/login?error=admin_required');
     }
   }, [session, status, router]);
 
-  // Display loading state
-  if (status === 'loading') {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
-  }
+  if (status === 'loading') return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
 
-  // Only show dashboard if authenticated and admin
   if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
     return (
       <div className="p-8">
@@ -36,7 +31,6 @@ export default function DashboardPage() {
     );
   }
 
-  // Return loading UI while redirects happen
   return <div className="flex justify-center items-center min-h-screen">Checking authorization...</div>;
 }
 
@@ -48,40 +42,58 @@ function DashboardCard({ title, count, link }) {
   const [selectedInstructorId, setSelectedInstructorId] = useState("");
   const [instructorAverage, setInstructorAverage] = useState(0);
 
+  const [courses, setCourses] = useState([]);
+  const [selectedCourseId, setSelectedCourseId] = useState("");
+  const [totalStudents, setTotalStudents] = useState(0);
+
   const handleToggleStats = async () => {
     if (!expanded) {
       if (title === "Students") {
         const res = await fetch("/api/students/statistics");
-        const data = await res.json();
-        setStats(data);
+        setStats(await res.json());
+      }
+
+      if (title === "Courses") {
+        const res = await fetch("/api/courses/stats");
+        setStats(await res.json());
+
+        const resList = await fetch("/api/courses/list");
+        setCourses(await resList.json());
+        setSelectedCourseId("");
+        setTotalStudents(0);
       }
 
       if (title === "Instructors") {
         const resStats = await fetch("/api/instructors/stats");
-        const dataStats = await resStats.json();
-        setStats(dataStats);
+        setStats(await resStats.json());
 
         const resList = await fetch("/api/instructors/list");
-        const dataList = await resList.json();
-        setInstructors(dataList);
-        setInstructorAverage(0);                
-        setSelectedInstructorId("");           
+        setInstructors(await resList.json());
+        setInstructorAverage(0);
+        setSelectedInstructorId("");
       }
     }
     setExpanded(!expanded);
   };
 
-  const handleSelectChange = async (e) => {
+  const handleSelectInstructor = async (e) => {
     const id = e.target.value;
     setSelectedInstructorId(id);
-
     if (id) {
       const res = await fetch(`/api/instructors/stats/${id}`);
       const data = await res.json();
       setInstructorAverage(data.averageGrade ?? 0);
-    } else {
-      setInstructorAverage(0);
-    }
+    } else setInstructorAverage(0);
+  };
+
+  const handleSelectCourse = async (e) => {
+    const id = e.target.value;
+    setSelectedCourseId(id);
+    if (id) {
+      const res = await fetch(`/api/courses/${id}/students`);
+      const data = await res.json();
+      setTotalStudents(data.totalStudents ?? 0);
+    } else setTotalStudents(0);
   };
 
   return (
@@ -95,13 +107,9 @@ function DashboardCard({ title, count, link }) {
         className="flex items-center space-x-1 text-gray-500 text-sm cursor-pointer hover:text-black"
       >
         <span>Show Stats</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
+        <svg xmlns="http://www.w3.org/2000/svg"
           className={`h-4 w-4 transform transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </div>
@@ -119,11 +127,8 @@ function DashboardCard({ title, count, link }) {
 
           {title === "Instructors" && (
             <>
-            <select
-                value={selectedInstructorId}
-                onChange={handleSelectChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-1 text-sm mt-3"
-              >
+              <select value={selectedInstructorId} onChange={handleSelectInstructor}
+                className="w-full border border-gray-300 rounded-md px-3 py-1 text-sm mt-3">
                 <option value="">Select Instructor</option>
                 {instructors.map(inst => (
                   <option key={inst.id} value={inst.id}>
@@ -135,11 +140,51 @@ function DashboardCard({ title, count, link }) {
               <p>Top Instructor: {stats.instructorWithMostCourses}</p>
             </>
           )}
-          {title === "Courses" && (
-            <>
-            
-            </>
-          )}
+
+         {title === "Courses" && (
+    <>
+        <select
+            value={selectedCourseId}
+            onChange={handleSelectCourse}
+            className="w-full border border-gray-300 rounded-md px-3 py-1 text-sm mt-3"
+        >
+            <option value="">Select Course</option>
+            {courses.map(course => (
+                <option key={course.id} value={course.id}>
+                    {course.courseCode}
+                </option>
+            ))}
+        </select>
+
+        <p>Total Students: {totalStudents}</p>
+
+        {stats.coursesWithMostAndLeastStudents?.mostStudents && (
+            <p>
+                Most Students: {stats.coursesWithMostAndLeastStudents.mostStudents.courseCode}
+                → {stats.coursesWithMostAndLeastStudents.mostStudents.studentCount} students
+            </p>
+        )}
+
+        {stats.coursesWithMostAndLeastStudents?.leastStudents?.length > 0 && (
+            <p>
+                Least Students: {stats.coursesWithMostAndLeastStudents.leastStudents.map(course => (
+                    `${course.courseCode} `
+                )).join(', ')}
+                → {stats.coursesWithMostAndLeastStudents.leastStudents[0].studentCount} students
+            </p>
+        )}
+
+        {stats.mostFailedCourse ? (
+            <p>
+                Most Failed Course: {stats.mostFailedCourse.courseCode}
+                → {stats.mostFailedCourse.failedCount} fails
+            </p>
+        ) : (
+            <p>Most Failed Course: None</p>
+        )}
+    </>
+)}
+
         </div>
       )}
     </div>

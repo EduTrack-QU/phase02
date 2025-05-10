@@ -1,5 +1,4 @@
-import {getInstructorById} from "@/app/repos/instructors";
-import { parse } from "next/dist/build/swc/generated-native";
+import {getInstructorById} from "@/repos/instructors";
 
 export async function GET(request, {params}) {
     const {inID} = params;

@@ -16,3 +16,52 @@ body {
 h1,h2,h3,h4,h5,h6 {
     font-family: var(--heading-font);
 }
+/* Dashboard page custom classes */
+
+.admin-page {
+    @apply p-8;
+}
+
+.admin-title {
+    @apply text-3xl font-bold mb-6;
+}
+
+.admin-welcome {
+    @apply mb-4;
+}
+
+.admin-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+.dashboard-card {
+    @apply bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-between;
+}
+
+.dashboard-title {
+    @apply text-xl font-semibold mb-2;
+}
+
+.dashboard-count {
+    @apply text-3xl font-bold mb-4;
+}
+
+.dashboard-link {
+    @apply text-blue-600 mb-4;
+}
+
+.dashboard-link:hover {
+    @apply underline;
+}
+
+.dashboard-toggle {
+    @apply flex items-center space-x-1 text-gray-500 text-sm cursor-pointer;
+}
+
+.dashboard-toggle:hover {
+    @apply text-black;
+}
+
+.dashboard-stats {
+    @apply mt-4 text-sm text-center text-gray-600;
+}

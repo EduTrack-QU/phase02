@@ -56,9 +56,9 @@ export async function getAverageGrade(){
             : 'N/A';
         
         instructorsWithAvgGrades.push({
-            ...instructor,
-            averageGrade,
-            totalEnrollments
+
+            averageGrade
+
         });
     }
     
@@ -101,7 +101,6 @@ export async function getInstructorWithMostCourses() {
         }
     });
 
-    // If no instructors found, return early
     if (instructorsWithSectionCount.length === 0) {
         return null;
     }
@@ -132,5 +131,38 @@ export async function getInstructorWithMostCourses() {
     });
     instructorsWithCoursesCount.sort((a, b) => b.uniqueCoursesCount - a.uniqueCoursesCount);
 
-    return instructorsWithCoursesCount[0];
+    const result = instructorsWithCoursesCount[0];
+    if (typeof result === "string") return result;
+    if (typeof result === "object" && result?.name) return result.name;
+
+    return "N/A";
+}
+export async function getInstructorAverageById(instructorId) {
+    const sections = await prisma.section.findMany({
+        where: {
+            instructorId: instructorId
+        },
+        include: {
+            enrollments: true
+        }
+    });
+
+    let totalGradePoints = 0;
+    let totalEnrollments = 0;
+
+    for (const section of sections) {
+        for (const enrollment of section.enrollments) {
+            if (enrollment.grade) {
+                const gradePoint = convertGradeToPoints(enrollment.grade);
+                if (gradePoint !== null) {
+                    totalGradePoints += gradePoint;
+                    totalEnrollments++;
+                }
+            }
+        }
+    }
+
+    return totalEnrollments > 0
+        ? (totalGradePoints / totalEnrollments).toFixed(2)
+        : 0;
 }

@@ -24,7 +24,7 @@ export async function getAverageGpa(){
             gpa: true,
         },
     });
-    return aggregations._avg.gpa;
+    return aggregations._avg.gpa.toFixed(2);
 }
 
 export async function getHighestGpa() {
@@ -33,7 +33,7 @@ export async function getHighestGpa() {
             gpa: true,
         },
     });
-    return aggregations._max.gpa;
+    return aggregations._max.gpa.toFixed(2);
 }
 
 export async function getLowGPAStudents(){

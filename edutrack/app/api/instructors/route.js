@@ -1,4 +1,4 @@
-import {getAllInstructors} from '@/app/repos/instructors';  
+import {getAllInstructors} from '@/repos/instructors';  
 
 export async function GET(request) {
     const instructors = await getAllInstructors();

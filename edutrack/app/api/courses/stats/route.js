@@ -1,11 +1,18 @@
-import { getCoursesWithMostAndLeastStudents, getMostFailedCourse } from "@/repos/courses";
-import { NextResponse } from "next/server";
-
+import {  getCoursesWithMostAndLeastStudents, getMostFailedCourse, getPeakHour } from '@/repos/courses';
+import { NextResponse } from 'next/server';
 export async function GET() {
-  const mostLeast = await getCoursesWithMostAndLeastStudents();
-  const failed = await getMostFailedCourse();
-  return NextResponse.json({
-    coursesWithMostAndLeastStudents: mostLeast,
-    mostFailedCourse: failed
-  });
+    try {
+        const coursesWithMostAndLeastStudents = await getCoursesWithMostAndLeastStudents();
+        const mostFailedCourse = await getMostFailedCourse();
+        const peakHour = await getPeakHour();
+
+        return NextResponse.json({
+            coursesWithMostAndLeastStudents,
+            mostFailedCourse,
+            peakHour
+        });
+    } catch (error) {
+        console.error("Error in /api/courses/stats", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
 }

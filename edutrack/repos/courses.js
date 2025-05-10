@@ -112,3 +112,60 @@ export async function getAllCourses() {
         select: { id: true, name: true, courseCode: true }
     });
 }
+export async function getPeakHour() {
+    const sections = await prisma.section.findMany({
+        select: { schedule: true }
+    });
+
+    const hourCounts = {};
+
+    for (const section of sections) {
+        const match = section.schedule.match(/(\d{1,2}):\d{2}/);
+        if (match) {
+            const hour = parseInt(match[1]);
+            hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+        }
+    }
+
+    let peakHour = null;
+    let maxCount = 0;
+    for (const [hour, count] of Object.entries(hourCounts)) {
+        if (count > maxCount) {
+            peakHour = hour;
+            maxCount = count;
+        }
+    }
+
+    return peakHour ? `${peakHour}:00` : "Unknown";
+}
+export async function getGradeDistributionForCourse(courseCode) {
+    const course = await prisma.course.findUnique({
+        where: { id:parseInt(courseCode) }
+    });
+
+    if (!course) return null;
+
+    const sections = await prisma.section.findMany({
+        where: { courseId: course.id },
+        include: { enrollments: { select: { grade: true } } }
+    });
+
+    const distribution = {
+        A: 0, 'A-': 0,
+        'B+': 0, B: 0, 'B-': 0,
+        'C+': 0, C: 0, 'C-': 0,
+        'D+': 0, D: 0, F: 0
+    };
+
+    for (const section of sections) {
+        for (const enrollment of section.enrollments) {
+            if (enrollment.grade && distribution.hasOwnProperty(enrollment.grade.toUpperCase())) {
+                distribution[enrollment.grade.toUpperCase()]++;
+            }
+        }
+    }
+
+    return distribution;
+}
+
+

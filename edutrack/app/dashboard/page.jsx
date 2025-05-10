@@ -113,6 +113,7 @@ function DashboardCard({ title, count, link }) {
               <p>Avg GPA: {stats.averageGpa}</p>
               <p>Highest GPA: {stats.highestGpa}</p>
               <p>Low GPA Students: {stats.lowGPAStudents?.length ?? 0}</p>
+              <p>Deans List: {stats.deansList?.length ?? 0}</p>
             </>
           )}
 
@@ -132,6 +133,11 @@ function DashboardCard({ title, count, link }) {
               </select>
               <p>Average Grade: {instructorAverage}</p>
               <p>Top Instructor: {stats.instructorWithMostCourses}</p>
+            </>
+          )}
+          {title === "Courses" && (
+            <>
+            
             </>
           )}
         </div>

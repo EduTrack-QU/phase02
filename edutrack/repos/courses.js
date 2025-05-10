@@ -167,5 +167,35 @@ export async function getGradeDistributionForCourse(courseCode) {
 
     return distribution;
 }
+export async function getFailureRateForCourse(courseCode) {
+    const course = await prisma.course.findUnique({
+        where: { courseCode }
+    });
+
+    if (!course) return null;
+
+    const sections = await prisma.section.findMany({
+        where: { courseId: course.id },
+        include: { enrollments: { select: { grade: true } } }
+    });
+
+    let totalGraded = 0;
+    let failedCount = 0;
+
+    for (const section of sections) {
+        for (const enrollment of section.enrollments) {
+            if (enrollment.grade) {
+                totalGraded++;
+                if (enrollment.grade.trim().toUpperCase() === 'F') {
+                    failedCount++;
+                }
+            }
+        }
+    }
+
+    const failureRate = totalGraded === 0 ? 0 : (failedCount / totalGraded) * 100;
+    return failureRate.toFixed(2);
+}
+
 
 

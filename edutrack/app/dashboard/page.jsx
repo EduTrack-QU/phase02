@@ -46,6 +46,7 @@ function DashboardCard({ title, count, link }) {
     const [selectedCourseId, setSelectedCourseId] = useState("");
     const [totalStudents, setTotalStudents] = useState(0);
     const [gradeDistribution, setGradeDistribution] = useState(null);
+    const [failureRate, setFailureRate] = useState("0");
 
     const handleToggleStats = async () => {
         if (!expanded) {
@@ -63,6 +64,7 @@ function DashboardCard({ title, count, link }) {
                 setSelectedCourseId("");
                 setTotalStudents(0);
                 setGradeDistribution(null);
+                setFailureRate("0");
             }
 
             if (title === "Instructors") {
@@ -92,15 +94,20 @@ function DashboardCard({ title, count, link }) {
         const id = e.target.value;
         setSelectedCourseId(id);
         if (id) {
-            const res = await fetch(`/api/courses/${id}/students`);
-            const data = await res.json();
-            setTotalStudents(data.totalStudents ?? 0);
+            const resStudents = await fetch(`/api/courses/${id}/students`);
+            const dataStudents = await resStudents.json();
+            setTotalStudents(dataStudents.totalStudents ?? 0);
 
             const resGrades = await fetch(`/api/courses/${id}/distribution`);
             setGradeDistribution(await resGrades.json());
+
+            const resFailure = await fetch(`/api/courses/${id}/failure`);
+            const dataFailure = await resFailure.json();
+            setFailureRate(dataFailure.failureRate ?? "0");
         } else {
             setTotalStudents(0);
             setGradeDistribution(null);
+            setFailureRate("0");
         }
     };
 
@@ -165,6 +172,7 @@ function DashboardCard({ title, count, link }) {
                             </select>
 
                             <p>Total Students: {totalStudents}</p>
+                            <p>Failure Rate: {failureRate}%</p>
 
                             {stats.coursesWithMostAndLeastStudents?.mostStudents && (
                                 <p>

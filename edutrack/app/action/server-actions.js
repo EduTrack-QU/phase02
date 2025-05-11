@@ -1,3 +1,4 @@
+'use server';
 import {getHighestGpa, getLowGPAStudents, getAverageGpa, getDeansList} from '@/repos/students';
 
 
@@ -17,3 +18,16 @@ export async function getDeansListAction() {
     const deansList = await getDeansList();
     return deansList;
 }
+
+
+export async function getStudentStatsAction() {
+  const [averageGpa, highestGpa, lowGPAStudents, deansList] = await Promise.all([
+    getAverageGpa(),
+    getHighestGpa(),
+    getLowGPAStudents(),
+    getDeansList()
+  ]);
+
+  return { averageGpa, highestGpa, lowGPAStudents, deansList };
+}
+

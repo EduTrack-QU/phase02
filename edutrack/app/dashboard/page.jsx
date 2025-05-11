@@ -3,6 +3,8 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import  { getStudentStatsAction } from "@/app/action/server-actions";
+
 
 export default function DashboardPage() {
     const { data: session, status } = useSession();
@@ -50,10 +52,11 @@ function DashboardCard({ title, count, link }) {
 
     const handleToggleStats = async () => {
         if (!expanded) {
-            if (title === "Students") {
-                const res = await fetch("/api/students/statistics");
-                setStats(await res.json());
+           if (title === "Students") {
+                const studentStats = await getStudentStatsAction();
+                setStats(studentStats);
             }
+
 
             if (title === "Courses") {
                 const res = await fetch("/api/courses/stats");

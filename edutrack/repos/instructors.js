@@ -166,3 +166,9 @@ export async function getInstructorAverageById(instructorId) {
         ? (totalGradePoints / totalEnrollments).toFixed(2)
         : 0;
 }
+export async function addInstructor(instructor) {
+    const newInstructor = await prisma.instructor.create({
+        data: instructor
+    });
+    return newInstructor;
+}

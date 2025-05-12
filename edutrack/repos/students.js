@@ -57,3 +57,9 @@ export async function getDeansList(){
     });
     return students;
 }
+export async function addStudent(student) {
+    const newStudent = await prisma.student.create({
+        data: student,
+    });
+    return newStudent;
+}

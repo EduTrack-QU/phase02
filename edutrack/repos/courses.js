@@ -201,6 +201,12 @@ export async function getCourseById(courseId) {
         where: { id: courseId },
     });
 }
+export async function addCourse(course) {
+    return prisma.course.create({
+        data: course
+        
+    });
+}
 
 
 

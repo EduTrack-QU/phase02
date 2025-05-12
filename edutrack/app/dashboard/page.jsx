@@ -189,7 +189,7 @@ function DashboardCard({ title, count, link, icon }) {
                                     <span className="font-bold text-[#1a73e8] text-lg">{stats.highestGpa}</span>
                                 </div>
                                 <div className="flex justify-between items-center mb-3">
-                                    <span className="font-medium text-gray-700">Students Below 2.0:</span>
+                                    <span className="font-medium text-gray-700">Students Below 2.5:</span>
                                     <span className="font-bold text-red-600 text-lg">{stats.lowGPAStudents?.length ?? 0}</span>
                                 </div>
                                 <div className="flex justify-between items-center">

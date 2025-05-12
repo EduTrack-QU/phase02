@@ -12,7 +12,7 @@ export async function middleware(req) {
   );
 
   // Admin-only routes
-  const adminOnlyPaths = ['/dashboard', '/statistics'];
+  const adminOnlyPaths = [ '/statistics'];
   const isAdminOnlyPath = adminOnlyPaths.some(path =>
     req.nextUrl.pathname.startsWith(path)
   );
@@ -34,5 +34,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/statistics/:path*', '/profile/:path*'],
+  matcher: [ '/statistics/:path*', '/profile/:path*'],
 };

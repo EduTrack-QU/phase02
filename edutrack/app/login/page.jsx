@@ -53,7 +53,10 @@ export default function LoginPage() {
     };
 
     const handleGithubSignIn = () => {
-        signIn('github', { callbackUrl });
+        signIn('github', {
+            callbackUrl,
+            redirect: true
+        });
     };
 
     return (

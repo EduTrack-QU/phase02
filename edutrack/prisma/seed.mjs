@@ -28,20 +28,6 @@ async function main() {
 
     // console.log(`Admin created with ID: ${adminResult.user.id}`);
 
-    // Update admin profile with additional details
-    const admin = await prisma.admin.findUnique({
-      where: { userId: adminResult.user.id }
-    });
-
-    await prisma.admin.update({
-      where: { id: admin.id },
-      data: {
-        name: 'ansari',
-        permissions: 'FULL_ACCESS',
-        isActive: true
-      }
-    });
-
     // Create instructor users
     // console.log('Creating instructor users...');
     const instructors = [];

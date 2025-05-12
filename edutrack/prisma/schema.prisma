@@ -64,7 +64,6 @@ model User {
   // Domain model relations
   student    Student?
   instructor Instructor?
-  admin      Admin?
 }
 
 // Application Domain Models
@@ -161,20 +160,6 @@ model Instructor {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   sections Section[]
-
-  @@index([userId])
-}
-
-model Admin {
-  id          Int      @id @default(autoincrement())
-  name        String
-  permissions String? // Could be JSON or specific permissions
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isActive    Boolean  @default(true)
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }

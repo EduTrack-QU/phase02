@@ -30,16 +30,7 @@ export async function registerUser({ name, email, password, role = 'USER' }) {
         console.log(`User created with ID: ${user.id}`);
 
         // Create the appropriate role-specific record if needed
-        if (role === 'ADMIN') {
-            await prisma.admin.create({
-                data: {
-                    name: name || 'Admin',
-                    userId: user.id,
-                    permissions: 'ALL',
-                },
-            });
-            console.log(`Admin record created for user ID: ${user.id}`);
-        } else if (role === 'INSTRUCTOR') {
+        if (role === 'INSTRUCTOR') {
             await prisma.instructor.create({
                 data: {
                     name: name || 'Instructor',

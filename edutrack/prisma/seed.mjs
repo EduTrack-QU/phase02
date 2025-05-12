@@ -5,10 +5,10 @@ import { registerUser } from '../lib/auth.js';
 const prisma = new PrismaClient();
 
 // Configuration
-const STUDENT_COUNT = 50;
-const INSTRUCTOR_COUNT = 10;
-const COURSE_COUNT = 10;
-const SECTION_COUNT = 20;
+const STUDENT_COUNT = 500;
+const INSTRUCTOR_COUNT = 55;
+const COURSE_COUNT = 15;
+const SECTION_COUNT = 50;
 async function main() {
   console.log('Starting database seeding...');
 

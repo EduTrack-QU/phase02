@@ -1,6 +1,6 @@
 import { PrismaClient } from './client/index.js';
 import { faker } from '@faker-js/faker';
-
+import { registerUser } from '../lib/auth.js';
 
 const prisma = new PrismaClient();
 
@@ -13,85 +13,110 @@ async function main() {
   console.log('Starting database seeding...');
 
   try {
-    // Create the admin user
-    console.log('Creating admin user...');
-    const adminUser = await prisma.user.create({
-      data: {
-        name: 'ansari',
-        email: 'ansari@qu.edu.qa',
-        role: 'ADMIN',
-        password: 'admin123',
-      }
+    // Create the admin user using registerUser
+    // console.log('Creating admin user...');
+    const adminResult = await registerUser({
+      name: 'Mahmoud Barhamghi',
+      email: 'edutrack@qu.edu.qa',
+      password: 'admin123',
+      role: 'ADMIN'
     });
 
-    // Create admin profile
-    await prisma.admin.create({
+    if (!adminResult.success) {
+      throw new Error(`Failed to create admin: ${adminResult.message}`);
+    }
+
+    // console.log(`Admin created with ID: ${adminResult.user.id}`);
+
+    // Update admin profile with additional details
+    const admin = await prisma.admin.findUnique({
+      where: { userId: adminResult.user.id }
+    });
+
+    await prisma.admin.update({
+      where: { id: admin.id },
       data: {
         name: 'ansari',
         permissions: 'FULL_ACCESS',
-        isActive: true,
-        userId: adminUser.id
-
+        isActive: true
       }
     });
 
-
-
     // Create instructor users
-    console.log('Creating instructor users...');
+    // console.log('Creating instructor users...');
     const instructors = [];
     for (let i = 0; i < INSTRUCTOR_COUNT; i++) {
       const fullName = faker.person.fullName();
-      const instructorUser = await prisma.user.create({
-        data: {
-          name: fullName,
-          email: faker.internet.email({ firstName: fullName.split(' ')[0], lastName: fullName.split(' ')[1] }).toLowerCase(),
-          role: 'INSTRUCTOR',
-          password: 'instructor123',
-        }
+      const email = faker.internet.email({ firstName: fullName.split(' ')[0], lastName: fullName.split(' ')[1] }).toLowerCase();
+
+      const instructorResult = await registerUser({
+        name: fullName,
+        email: email,
+        password: 'instructor123',
+        role: 'INSTRUCTOR'
       });
 
-      const instructor = await prisma.instructor.create({
+      if (!instructorResult.success) {
+        console.error(`Failed to create instructor: ${instructorResult.message}`);
+        continue;
+      }
+
+      const instructor = await prisma.instructor.findUnique({
+        where: { userId: instructorResult.user.id }
+      });
+
+      // Update the instructor with additional details
+      const updatedInstructor = await prisma.instructor.update({
+        where: { id: instructor.id },
         data: {
-          name: fullName,
           speciality: faker.helpers.arrayElement([
             'Computer Science', 'Mathematics', 'Physics', 'Literature',
             'History', 'Biology', 'Chemistry', 'Philosophy'
           ]),
-          isActive: true,
-          userId: instructorUser.id
+          isActive: true
         }
       });
-      instructors.push(instructor);
+
+      instructors.push(updatedInstructor);
     }
 
     // Create student users
-    console.log('Creating student users...');
+    // console.log('Creating student users...');
     const students = [];
     for (let i = 0; i < STUDENT_COUNT; i++) {
       const fullName = faker.person.fullName();
-      const studentUser = await prisma.user.create({
+      const email = faker.internet.email({ firstName: fullName.split(' ')[0], lastName: fullName.split(' ')[1] }).toLowerCase();
+
+      const studentResult = await registerUser({
+        name: fullName,
+        email: email,
+        password: 'student123',
+        role: 'STUDENT'
+      });
+
+      if (!studentResult.success) {
+        console.error(`Failed to create student: ${studentResult.message}`);
+        continue;
+      }
+
+      const student = await prisma.student.findUnique({
+        where: { userId: studentResult.user.id }
+      });
+
+      // Update the student with additional details
+      const updatedStudent = await prisma.student.update({
+        where: { id: student.id },
         data: {
-          name: fullName,
-          email: faker.internet.email({ firstName: fullName.split(' ')[0], lastName: fullName.split(' ')[1] }).toLowerCase(),
-          role: 'STUDENT',
-          password: 'student123',
+          gpa: parseFloat(faker.number.float({ min: 2.0, max: 4.0, precision: 0.01 })),
+          isActive: true
         }
       });
 
-      const student = await prisma.student.create({
-        data: {
-          name: fullName,
-          gpa: parseFloat(faker.number.float({ min: 2.0, max: 4.0, precision: 0.01 })),
-          isActive: true,
-          userId: studentUser.id
-        }
-      });
-      students.push(student);
+      students.push(updatedStudent);
     }
 
     // Create courses
-    console.log('Creating courses...');
+    // console.log('Creating courses...');
     const departments = ['Mathematics', 'Computer Science', 'English', 'History', 'Science', 'Art', 'Music', 'Physics', 'Chemistry', 'Biology'];
     const levels = ['Undergraduate', 'Graduate'];
     const courses = [];
@@ -117,7 +142,7 @@ async function main() {
     }
 
     // Create sections
-    console.log('Creating sections...');
+    // console.log('Creating sections...');
     const locations = ['Main Hall Room 101', 'Science Building 305', 'Library 201', 'Arts Center 405', 'Engineering Building 202'];
     const sectionStatus = ['SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
     const terms = ['Fall 2025', 'Spring 2026', 'Summer 2026'];
@@ -138,9 +163,6 @@ async function main() {
         startDate = new Date('2026-06-01');
         endDate = new Date('2026-08-01');
       }
-
-
-
 
       // Add some randomness to dates
       startDate.setDate(startDate.getDate() + faker.number.int({ min: 0, max: 5 }));
@@ -175,7 +197,7 @@ async function main() {
     }
 
     // Create enrollments
-    console.log('Creating enrollments...');
+    // console.log('Creating enrollments...');
     const gradeOptions = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'F'];
     const enrollmentStatus = ['ENROLLED', 'DROPPED', 'WAITLISTED'];
 
@@ -204,8 +226,6 @@ async function main() {
           console.log(`Skipping duplicate enrollment for student ${student.id} in section ${section.id}`);
         }
       }
-
-
 
       // Update enrolled count for the section
       const actualEnrolled = await prisma.enrollment.count({

@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
-import prisma from './prisma';
+import prisma from './prisma.js';
 
+//this is used to register users with encrypted password 
 export async function registerUser({ name, email, password, role = 'USER' }) {
     try {
         // Check if user already exists

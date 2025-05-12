@@ -266,7 +266,7 @@ function DashboardCard({ title, count, link, icon }) {
                                                 </span>
                                             </span>
                                         ) : (
-                                            <span className="text-gray-500">None reported</span>
+                                           <span className="text-gray-500">None reported</span>
                                         )}
                                     </div>
 

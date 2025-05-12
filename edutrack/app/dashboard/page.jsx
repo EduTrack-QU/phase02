@@ -157,9 +157,6 @@ function DashboardCard({ title, count, link, icon }) {
                 </div>
 
                 <div className="flex justify-between items-center">
-                    <a href={link} className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-300">
-                        Manage {title}
-                    </a>
 
                     <button
                         onClick={handleToggleStats}

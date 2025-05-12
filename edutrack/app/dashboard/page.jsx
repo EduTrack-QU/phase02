@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import  { getStudentStatsAction } from "@/app/action/server-actions";
+import { getStudentStatsAction } from "@/app/action/server-actions";
 
 
 export default function DashboardPage() {
@@ -20,14 +20,43 @@ export default function DashboardPage() {
 
     if (status === 'authenticated' && session?.user?.role === 'ADMIN') {
         return (
-            <div className="p-8">
-                <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
-                <p className="mb-4">Welcome, {session.user.name || session.user.email}</p>
+            <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white p-8">
+                <div className="max-w-7xl mx-auto">
+                    <h1 className="text-4xl font-bold mb-2 text-white">Admin Dashboard</h1>
+                    <p className="text-xl text-gray-300 mb-8">Welcome, {session?.user?.name || "Admin"}</p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <DashboardCard title="Students" count="..." link="#" />
-                    <DashboardCard title="Instructors" count="..." link="#" />
-                    <DashboardCard title="Courses" count="..." link="#" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <DashboardCard
+                            title="Students"
+                            count="..."
+                            link="#"
+                            icon={
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                            }
+                        />
+                        <DashboardCard
+                            title="Instructors"
+                            count="..."
+                            link="#"
+                            icon={
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            }
+                        />
+                        <DashboardCard
+                            title="Courses"
+                            count="..."
+                            link="#"
+                            icon={
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                            }
+                        />
+                    </div>
                 </div>
             </div>
         );
@@ -36,7 +65,7 @@ export default function DashboardPage() {
     return <div className="flex justify-center items-center min-h-screen">Checking authorization...</div>;
 }
 
-function DashboardCard({ title, count, link }) {
+function DashboardCard({ title, count, link, icon }) {
     const [stats, setStats] = useState(null);
     const [expanded, setExpanded] = useState(false);
 
@@ -52,7 +81,7 @@ function DashboardCard({ title, count, link }) {
 
     const handleToggleStats = async () => {
         if (!expanded) {
-           if (title === "Students") {
+            if (title === "Students") {
                 const studentStats = await getStudentStatsAction();
                 setStats(studentStats);
             }
@@ -115,38 +144,66 @@ function DashboardCard({ title, count, link }) {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6 flex flex-col items-center justify-between">
-            <h2 className="text-xl font-semibold mb-2">{title}</h2>
-            <p className="text-3xl font-bold mb-4">{count}</p>
-            <a href={link} className="text-blue-600 hover:underline mb-4">Manage {title}</a>
+        <div className="bg-gray-800 rounded-lg border border-gray-700 shadow-xl overflow-hidden">
+            <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center">
+                        <div className="p-3 rounded-full bg-gray-700">
+                            {icon}
+                        </div>
+                        <h2 className="text-2xl font-semibold ml-3 text-white">{title}</h2>
+                    </div>
+                    <p className="text-3xl font-bold text-gray-300">{count}</p>
+                </div>
 
-            <div
-                onClick={handleToggleStats}
-                className="flex items-center space-x-1 text-gray-500 text-sm cursor-pointer hover:text-black"
-            >
-                <span>Show Stats</span>
-                <svg xmlns="http://www.w3.org/2000/svg"
-                    className={`h-4 w-4 transform transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <div className="flex justify-between items-center">
+                    <a href={link} className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-300">
+                        Manage {title}
+                    </a>
+
+                    <button
+                        onClick={handleToggleStats}
+                        className="flex items-center space-x-1 text-gray-400 text-sm hover:text-white transition-colors duration-300 bg-gray-700 px-3 py-1 rounded-md"
+                    >
+                        <span>{expanded ? "Hide Stats" : "Show Stats"}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            className={`h-4 w-4 transform transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             {expanded && stats && (
-                <div className="mt-4 text-sm text-center text-gray-600 w-full">
+                <div className="bg-gray-900 px-6 py-4 border-t border-gray-700">
                     {title === "Students" && (
-                        <>
-                            <p>Avg GPA: {stats.averageGpa}</p>
-                            <p>Highest GPA: {stats.highestGpa}</p>
-                            <p>Low GPA Students: {stats.lowGPAStudents?.length ?? 0}</p>
-                            <p>Deans List: {stats.deansList?.length ?? 0}</p>
-                        </>
+                        <div className="space-y-4">
+                            <div className="bg-gray-800 rounded-lg p-4">
+                                <div className="flex justify-between items-center mb-3">
+                                    <span className="font-medium text-gray-400">Average GPA:</span>
+                                    <span className="font-bold text-blue-400 text-lg">{stats.averageGpa}</span>
+                                </div>
+                                <div className="flex justify-between items-center mb-3">
+                                    <span className="font-medium text-gray-400">Highest Student GPA:</span>
+                                    <span className="font-bold text-green-400 text-lg">{stats.highestGpa}</span>
+                                </div>
+                                <div className="flex justify-between items-center mb-3">
+                                    <span className="font-medium text-gray-400">Students Below 2.0:</span>
+                                    <span className="font-bold text-red-400 text-lg">{stats.lowGPAStudents?.length ?? 0}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="font-medium text-gray-400">Dean's List Students:</span>
+                                    <span className="font-bold text-purple-400 text-lg">{stats.deansList?.length ?? 0}</span>
+                                </div>
+                            </div>
+                        </div>
                     )}
 
                     {title === "Instructors" && (
-                        <>
+                        <div className="space-y-4">
                             <select value={selectedInstructorId} onChange={handleSelectInstructor}
-                                className="w-full border border-gray-300 rounded-md px-3 py-1 text-sm mt-3">
+                                className="w-full border border-gray-700 bg-gray-800 text-white rounded-md px-3 py-2 text-sm mb-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                 <option value="">Select Instructor</option>
                                 {instructors.map(inst => (
                                     <option key={inst.id} value={inst.id}>
@@ -154,67 +211,126 @@ function DashboardCard({ title, count, link }) {
                                     </option>
                                 ))}
                             </select>
-                            <p>Average Grade: {instructorAverage}</p>
-                            <p>Top Instructor: {stats.instructorWithMostCourses}</p>
-                        </>
+                            <div className="bg-gray-800 rounded-lg p-4">
+                                <div className="flex justify-between items-center mb-3">
+                                    <span className="font-medium text-gray-400">Instructor's Average Grade:</span>
+                                    <span className="font-bold text-blue-400 text-lg">{instructorAverage}</span>
+                                </div>
+                                <div className="pt-2 border-t border-gray-700">
+                                    <span className="font-medium text-gray-400 block mb-1">Most Active Instructor:</span>
+                                    <span className="font-bold text-indigo-400 text-base">{stats.instructorWithMostCourses}</span>
+                                </div>
+                            </div>
+                        </div>
                     )}
 
                     {title === "Courses" && (
-                        <>
-                            <select
-                                value={selectedCourseId}
-                                onChange={handleSelectCourse}
-                                className="w-full border border-gray-300 rounded-md px-3 py-1 text-sm mt-3"
-                            >
-                                <option value="">Select Course</option>
-                                {courses.map(course => (
-                                    <option key={course.id} value={course.id}>
-                                        {course.courseCode}
-                                    </option>
-                                ))}
-                            </select>
+                        <div className="space-y-4">
+                            {/* General Course Statistics */}
+                            <div className="bg-gray-800 rounded-lg p-4">
+                                <h3 className="font-bold text-white mb-3 text-center border-b border-gray-700 pb-2">System-Wide Course Statistics</h3>
+                                <div className="space-y-3">
+                                    <div className="pt-1">
+                                        <span className="font-medium text-gray-400 block mb-1">Highest Enrollment:</span>
+                                        {stats.coursesWithMostAndLeastStudents?.mostStudents && (
+                                            <span className="font-bold text-green-400">
+                                                {stats.coursesWithMostAndLeastStudents.mostStudents.courseCode}
+                                                <span className="ml-2 text-sm font-normal text-gray-500">
+                                                    ({stats.coursesWithMostAndLeastStudents.mostStudents.studentCount} students)
+                                                </span>
+                                            </span>
+                                        )}
+                                    </div>
 
-                            <p>Total Students: {totalStudents}</p>
-                            <p>Failure Rate: {failureRate}%</p>
+                                    <div>
+                                        <span className="font-medium text-gray-400 block mb-1">Lowest Enrollment:</span>
+                                        {stats.coursesWithMostAndLeastStudents?.leastStudents?.length > 0 && (
+                                            <span className="font-bold text-orange-400">
+                                                {stats.coursesWithMostAndLeastStudents.leastStudents.map(course => (
+                                                    `${course.courseCode} `
+                                                )).join(', ')}
+                                                <span className="ml-2 text-sm font-normal text-gray-500">
+                                                    ({stats.coursesWithMostAndLeastStudents.leastStudents[0].studentCount} students)
+                                                </span>
+                                            </span>
+                                        )}
+                                    </div>
 
-                            {stats.coursesWithMostAndLeastStudents?.mostStudents && (
-                                <p>
-                                    Most Students: {stats.coursesWithMostAndLeastStudents.mostStudents.courseCode}
-                                    → {stats.coursesWithMostAndLeastStudents.mostStudents.studentCount} students
-                                </p>
-                            )}
+                                    <div>
+                                        <span className="font-medium text-gray-400 block mb-1">Course with Most Failures:</span>
+                                        {stats.mostFailedCourse ? (
+                                            <span className="font-bold text-red-400">
+                                                {stats.mostFailedCourse.courseCode}
+                                                <span className="ml-2 text-sm font-normal text-gray-500">
+                                                    ({stats.mostFailedCourse.failedCount} students)
+                                                </span>
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-500">None reported</span>
+                                        )}
+                                    </div>
 
-                            {stats.coursesWithMostAndLeastStudents?.leastStudents?.length > 0 && (
-                                <p>
-                                    Least Students: {stats.coursesWithMostAndLeastStudents.leastStudents.map(course => (
-                                        `${course.courseCode} `
-                                    )).join(', ')}
-                                    → {stats.coursesWithMostAndLeastStudents.leastStudents[0].studentCount} students
-                                </p>
-                            )}
+                                    <div className="flex justify-between items-center pt-1">
+                                        <span className="font-medium text-gray-400">Peak Class Hour:</span>
+                                        <span className="font-bold text-indigo-400">{stats.peakHour}</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                            {stats.mostFailedCourse ? (
-                                <p>
-                                    Most Failed Course: {stats.mostFailedCourse.courseCode}
-                                    → {stats.mostFailedCourse.failedCount} fails
-                                </p>
-                            ) : (
-                                <p>Most Failed Course: None</p>
-                            )}
+                            {/* Course-Specific Statistics */}
+                            <div className="bg-gray-800 rounded-lg p-4">
+                                <h3 className="font-bold text-white mb-3 text-center border-b border-gray-700 pb-2">Course-Specific Statistics</h3>
 
-                            <p>Peak Hour: {stats.peakHour}</p>
-
-                            <h3 className="mt-4 font-bold">Grade Distribution for Course</h3>
-                            {gradeDistribution ? (
-                                <ul className="text-xs">
-                                    {Object.entries(gradeDistribution).map(([grade, count]) => (
-                                        <li key={grade}>{grade}: {count}</li>
+                                <select
+                                    value={selectedCourseId}
+                                    onChange={handleSelectCourse}
+                                    className="w-full border border-gray-700 bg-gray-800 text-white rounded-md px-3 py-2 text-sm mb-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                    <option value="">Select Course</option>
+                                    {courses.map(course => (
+                                        <option key={course.id} value={course.id}>
+                                            {course.courseCode}
+                                        </option>
                                     ))}
-                                </ul>
-                            ) : (
-                                <p>No data. Select a course.</p>
-                            )}
-                        </>
+                                </select>
+
+                                {selectedCourseId ? (
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <span className="font-medium text-gray-400">Enrolled Students:</span>
+                                            <span className="font-bold text-blue-400">{totalStudents}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="font-medium text-gray-400">Course Failure Rate:</span>
+                                            <span className="font-bold text-red-400">{failureRate}%</span>
+                                        </div>
+
+                                        <div className="mt-4">
+                                            <h4 className="font-semibold text-white mb-2 border-b border-gray-700 pb-1">Grade Distribution</h4>
+                                            {gradeDistribution ? (
+                                                <div>
+                                                    <div className="grid grid-cols-5 gap-2">
+                                                        {Object.entries(gradeDistribution).map(([grade, count]) => (
+                                                            <div key={grade} className="bg-gray-700 p-2 rounded text-center">
+                                                                <div className="font-bold text-sm text-white">{grade}</div>
+                                                                <div className="text-gray-300">{count}</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <p className="mt-3 text-xs text-gray-400 italic">
+                                                        Note: Only {Object.values(gradeDistribution).reduce((a, b) => a + b, 0)} of {totalStudents} students have been assigned grades.
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <p className="text-gray-400 italic">Loading grade distribution...</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-400 italic text-center">Select a course to view detailed statistics</p>
+                                )}
+                            </div>
+                        </div>
                     )}
                 </div>
             )}

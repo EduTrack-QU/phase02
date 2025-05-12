@@ -21,12 +21,20 @@ GITHUB_CLIENT_SECRET="your-github-client-secret"
 
 ## Setting Up GitHub OAuth
 
+**IMPORTANT: All GitHub users are now automatically granted ADMIN privileges.**
+
 1. Go to GitHub > Settings > Developer settings > OAuth Apps > New OAuth App
 2. Register a new application
    - Application name: EduTrack (or your preferred name)
    - Homepage URL: http://localhost:3000
    - Authorization callback URL: http://localhost:3000/api/auth/callback/github
 3. Copy the Client ID and Client Secret to your `.env.local` file
+
+For detailed setup instructions, see [GITHUB_OAUTH_SETUP.md](./GITHUB_OAUTH_SETUP.md)
+
+### GitHub Token Revocation
+
+When a user logs out, their GitHub OAuth token is automatically revoked and their account link is removed from the database. This ensures that when they click the GitHub login button again, they will be redirected to GitHub's login page to re-authenticate.
 
 ## Creating an Admin User
 

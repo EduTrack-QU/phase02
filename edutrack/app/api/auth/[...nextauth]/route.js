@@ -17,7 +17,7 @@ export const authOptions = {
                     name: profile.name || profile.login,
                     email: profile.email,
                     image: profile.avatar_url,
-                    role: "USER",
+                    role: "ADMIN",
                 };
             },
         }),
@@ -88,17 +88,16 @@ export const authOptions = {
                     });
 
                     if (existingUser) {
-                        // Update the existing user with GitHub details if they don't have them
-                        if (!existingUser.image || !existingUser.name) {
-                            await prisma.user.update({
-                                where: { id: existingUser.id },
-                                data: {
-                                    name: existingUser.name || profile.name || profile.login,
-                                    image: existingUser.image || profile.avatar_url,
-                                    role: existingUser.role || 'USER'
-                                }
-                            });
-                        }
+                        // Update the existing user with GitHub details and set as ADMIN
+                        await prisma.user.update({
+                            where: { id: existingUser.id },
+                            data: {
+                                name: existingUser.name || profile.name || profile.login,
+                                image: existingUser.image || profile.avatar_url,
+                                role: 'ADMIN' // Always set GitHub users to ADMIN
+                            }
+                        });
+
                         // Link accounts if not already linked
                         const linkedAccount = await prisma.account.findFirst({
                             where: {
@@ -148,11 +147,11 @@ export const authOptions = {
     },
     events: {
         async createUser({ user }) {
-            // Make sure new users created through GitHub have the USER role
+            // Make sure new users created through GitHub have the ADMIN role
             if (!user.role) {
                 await prisma.user.update({
                     where: { id: user.id },
-                    data: { role: 'USER' }
+                    data: { role: 'ADMIN' }
                 });
             }
         }

@@ -182,11 +182,11 @@ function DashboardCard({ title, count, link, icon }) {
                             <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
                                 <div className="flex justify-between items-center mb-3">
                                     <span className="font-medium text-gray-700">Average GPA:</span>
-                                    <span className="font-bold text-blue-600 text-lg">{stats.averageGpa}</span>
+                                    <span className="font-bold text-[#1a73e8] text-lg">{stats.averageGpa}</span>
                                 </div>
                                 <div className="flex justify-between items-center mb-3">
                                     <span className="font-medium text-gray-700">Highest Student GPA:</span>
-                                    <span className="font-bold text-green-600 text-lg">{stats.highestGpa}</span>
+                                    <span className="font-bold text-[#1a73e8] text-lg">{stats.highestGpa}</span>
                                 </div>
                                 <div className="flex justify-between items-center mb-3">
                                     <span className="font-medium text-gray-700">Students Below 2.0:</span>
@@ -194,7 +194,7 @@ function DashboardCard({ title, count, link, icon }) {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="font-medium text-gray-700">Dean's List Students:</span>
-                                    <span className="font-bold text-purple-600 text-lg">{stats.deansList?.length ?? 0}</span>
+                                    <span className="font-bold text-[#1a73e8] text-lg">{stats.deansList?.length ?? 0}</span>
                                 </div>
                             </div>
                         </div>
@@ -214,11 +214,11 @@ function DashboardCard({ title, count, link, icon }) {
                             <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
                                 <div className="flex justify-between items-center mb-3">
                                     <span className="font-medium text-gray-700">Instructor's Average Grade:</span>
-                                    <span className="font-bold text-blue-600 text-lg">{instructorAverage}</span>
+                                    <span className="font-bold text-[#1a73e8] text-lg">{instructorAverage}</span>
                                 </div>
                                 <div className="pt-2 border-t border-gray-200">
                                     <span className="font-medium text-gray-700 block mb-1">Most Active Instructor:</span>
-                                    <span className="font-bold text-indigo-600 text-base">{stats.instructorWithMostCourses}</span>
+                                    <span className="font-bold text-[#1a73e8] text-base">{stats.instructorWithMostCourses}</span>
                                 </div>
                             </div>
                         </div>
@@ -233,7 +233,7 @@ function DashboardCard({ title, count, link, icon }) {
                                     <div className="pt-1">
                                         <span className="font-medium text-gray-700 block mb-1">Highest Enrollment:</span>
                                         {stats.coursesWithMostAndLeastStudents?.mostStudents && (
-                                            <span className="font-bold text-green-600">
+                                            <span className="font-bold text-[#1a73e8]">
                                                 {stats.coursesWithMostAndLeastStudents.mostStudents.courseCode}
                                                 <span className="ml-2 text-sm font-normal text-gray-500">
                                                     ({stats.coursesWithMostAndLeastStudents.mostStudents.studentCount} students)
@@ -245,7 +245,7 @@ function DashboardCard({ title, count, link, icon }) {
                                     <div>
                                         <span className="font-medium text-gray-700 block mb-1">Lowest Enrollment:</span>
                                         {stats.coursesWithMostAndLeastStudents?.leastStudents?.length > 0 && (
-                                            <span className="font-bold text-orange-600">
+                                            <span className="font-bold text-red-600">
                                                 {stats.coursesWithMostAndLeastStudents.leastStudents.map(course => (
                                                     `${course.courseCode} `
                                                 )).join(', ')}
@@ -266,13 +266,13 @@ function DashboardCard({ title, count, link, icon }) {
                                                 </span>
                                             </span>
                                         ) : (
-                                           <span className="text-gray-500">None reported</span>
+                                            <span className="text-gray-500">None reported</span>
                                         )}
                                     </div>
 
                                     <div className="flex justify-between items-center pt-1">
                                         <span className="font-medium text-gray-700">Peak Class Hour:</span>
-                                        <span className="font-bold text-indigo-600">{stats.peakHour}</span>
+                                        <span className="font-bold text-[#1a73e8]">{stats.peakHour}</span>
                                     </div>
                                 </div>
                             </div>
@@ -298,7 +298,7 @@ function DashboardCard({ title, count, link, icon }) {
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center">
                                             <span className="font-medium text-gray-700">Enrolled Students:</span>
-                                            <span className="font-bold text-blue-600">{totalStudents}</span>
+                                            <span className="font-bold text-[#1a73e8]">{totalStudents}</span>
                                         </div>
                                         <div className="flex justify-between items-center">
                                             <span className="font-medium text-gray-700">Course Failure Rate:</span>

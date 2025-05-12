@@ -196,6 +196,11 @@ export async function getFailureRateForCourse(courseCode) {
     const failureRate = totalGraded === 0 ? 0 : (failedCount / totalGraded) * 100;
     return failureRate.toFixed(2);
 }
+export async function getCourseById(courseId) {
+    return prisma.course.findUnique({
+        where: { id: courseId },
+    });
+}
 
 
 
